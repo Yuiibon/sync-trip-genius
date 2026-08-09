@@ -14,13 +14,301 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      itineraries: {
+        Row: {
+          budget_breakdown: Json
+          content: Json
+          created_at: string
+          id: string
+          packing_list: string[]
+          plan_id: string | null
+          trip_id: string
+        }
+        Insert: {
+          budget_breakdown?: Json
+          content?: Json
+          created_at?: string
+          id?: string
+          packing_list?: string[]
+          plan_id?: string | null
+          trip_id: string
+        }
+        Update: {
+          budget_breakdown?: Json
+          content?: Json
+          created_at?: string
+          id?: string
+          packing_list?: string[]
+          plan_id?: string | null
+          trip_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "itineraries_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "trip_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "itineraries_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: true
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      participant_responses: {
+        Row: {
+          accommodation: string | null
+          additional_preferences: string | null
+          anonymous_token: string
+          available_dates: string[]
+          budget_range: string | null
+          created_at: string
+          id: string
+          interests: string[]
+          transportation: string | null
+          travel_style: string | null
+          trip_id: string
+        }
+        Insert: {
+          accommodation?: string | null
+          additional_preferences?: string | null
+          anonymous_token: string
+          available_dates?: string[]
+          budget_range?: string | null
+          created_at?: string
+          id?: string
+          interests?: string[]
+          transportation?: string | null
+          travel_style?: string | null
+          trip_id: string
+        }
+        Update: {
+          accommodation?: string | null
+          additional_preferences?: string | null
+          anonymous_token?: string
+          available_dates?: string[]
+          budget_range?: string | null
+          created_at?: string
+          id?: string
+          interests?: string[]
+          transportation?: string | null
+          travel_style?: string | null
+          trip_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participant_responses_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          name: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id: string
+          name?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
+      trip_plans: {
+        Row: {
+          activities: string[]
+          compatibility_score: number
+          created_at: string
+          dates: string | null
+          destination: string
+          duration: number
+          estimated_budget: number
+          id: string
+          is_selected: boolean
+          plan_name: string
+          reasoning: string[]
+          score_availability: number
+          score_budget: number
+          score_interests: number
+          trip_id: string
+        }
+        Insert: {
+          activities?: string[]
+          compatibility_score?: number
+          created_at?: string
+          dates?: string | null
+          destination: string
+          duration?: number
+          estimated_budget?: number
+          id?: string
+          is_selected?: boolean
+          plan_name: string
+          reasoning?: string[]
+          score_availability?: number
+          score_budget?: number
+          score_interests?: number
+          trip_id: string
+        }
+        Update: {
+          activities?: string[]
+          compatibility_score?: number
+          created_at?: string
+          dates?: string | null
+          destination?: string
+          duration?: number
+          estimated_budget?: number
+          id?: string
+          is_selected?: boolean
+          plan_name?: string
+          reasoning?: string[]
+          score_availability?: number
+          score_budget?: number
+          score_interests?: number
+          trip_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trip_plans_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trips: {
+        Row: {
+          budget_max: number
+          budget_min: number
+          created_at: string
+          destination: string
+          duration: number
+          end_date: string | null
+          id: string
+          invite_token: string
+          organizer_id: string
+          organizer_message: string | null
+          participant_count: number
+          start_date: string | null
+          status: string
+          trip_name: string
+        }
+        Insert: {
+          budget_max?: number
+          budget_min?: number
+          created_at?: string
+          destination: string
+          duration?: number
+          end_date?: string | null
+          id?: string
+          invite_token: string
+          organizer_id?: string
+          organizer_message?: string | null
+          participant_count?: number
+          start_date?: string | null
+          status?: string
+          trip_name: string
+        }
+        Update: {
+          budget_max?: number
+          budget_min?: number
+          created_at?: string
+          destination?: string
+          duration?: number
+          end_date?: string | null
+          id?: string
+          invite_token?: string
+          organizer_id?: string
+          organizer_message?: string | null
+          participant_count?: number
+          start_date?: string | null
+          status?: string
+          trip_name?: string
+        }
+        Relationships: []
+      }
+      votes: {
+        Row: {
+          anonymous_token: string
+          created_at: string
+          id: string
+          plan_id: string
+          trip_id: string
+        }
+        Insert: {
+          anonymous_token: string
+          created_at?: string
+          id?: string
+          plan_id: string
+          trip_id: string
+        }
+        Update: {
+          anonymous_token?: string
+          created_at?: string
+          id?: string
+          plan_id?: string
+          trip_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "votes_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "trip_plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "votes_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      cast_plan_vote: {
+        Args: { p_anon: string; p_plan_id: string; p_token: string }
+        Returns: Json
+      }
+      get_trip_by_token: {
+        Args: { p_anon?: string; p_token: string }
+        Returns: Json
+      }
+      submit_participant_response: {
+        Args: {
+          p_accommodation: string
+          p_anon: string
+          p_budget: string
+          p_dates: string[]
+          p_interests: string[]
+          p_notes: string
+          p_style: string
+          p_token: string
+          p_transportation: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
