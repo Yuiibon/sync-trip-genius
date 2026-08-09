@@ -18,6 +18,9 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedTripsIndexRouteImport } from './routes/_authenticated/trips.index'
 import { Route as AuthenticatedTripsNewRouteImport } from './routes/_authenticated/trips.new'
 import { Route as AuthenticatedTripsIdIndexRouteImport } from './routes/_authenticated/trips.$id.index'
+import { Route as AuthenticatedTripsIdItineraryRouteImport } from './routes/_authenticated/trips.$id.itinerary'
+import { Route as AuthenticatedTripsIdPlansRouteImport } from './routes/_authenticated/trips.$id.plans'
+import { Route as AuthenticatedTripsIdResponsesRouteImport } from './routes/_authenticated/trips.$id.responses'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -64,6 +67,24 @@ const AuthenticatedTripsIdIndexRoute =
     path: '/trips/$id/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedTripsIdItineraryRoute =
+  AuthenticatedTripsIdItineraryRouteImport.update({
+    id: '/trips/$id/itinerary',
+    path: '/trips/$id/itinerary',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTripsIdPlansRoute =
+  AuthenticatedTripsIdPlansRouteImport.update({
+    id: '/trips/$id/plans',
+    path: '/trips/$id/plans',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTripsIdResponsesRoute =
+  AuthenticatedTripsIdResponsesRouteImport.update({
+    id: '/trips/$id/responses',
+    path: '/trips/$id/responses',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -73,6 +94,9 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/trips/new': typeof AuthenticatedTripsNewRoute
   '/trips/': typeof AuthenticatedTripsIndexRoute
+  '/trips/$id/itinerary': typeof AuthenticatedTripsIdItineraryRoute
+  '/trips/$id/plans': typeof AuthenticatedTripsIdPlansRoute
+  '/trips/$id/responses': typeof AuthenticatedTripsIdResponsesRoute
   '/trips/$id/': typeof AuthenticatedTripsIdIndexRoute
 }
 export interface FileRoutesByTo {
@@ -83,6 +107,9 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/trips/new': typeof AuthenticatedTripsNewRoute
   '/trips': typeof AuthenticatedTripsIndexRoute
+  '/trips/$id/itinerary': typeof AuthenticatedTripsIdItineraryRoute
+  '/trips/$id/plans': typeof AuthenticatedTripsIdPlansRoute
+  '/trips/$id/responses': typeof AuthenticatedTripsIdResponsesRoute
   '/trips/$id': typeof AuthenticatedTripsIdIndexRoute
 }
 export interface FileRoutesById {
@@ -95,6 +122,9 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/trips/new': typeof AuthenticatedTripsNewRoute
   '/_authenticated/trips/': typeof AuthenticatedTripsIndexRoute
+  '/_authenticated/trips/$id/itinerary': typeof AuthenticatedTripsIdItineraryRoute
+  '/_authenticated/trips/$id/plans': typeof AuthenticatedTripsIdPlansRoute
+  '/_authenticated/trips/$id/responses': typeof AuthenticatedTripsIdResponsesRoute
   '/_authenticated/trips/$id/': typeof AuthenticatedTripsIdIndexRoute
 }
 export interface FileRouteTypes {
@@ -107,6 +137,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/trips/new'
     | '/trips/'
+    | '/trips/$id/itinerary'
+    | '/trips/$id/plans'
+    | '/trips/$id/responses'
     | '/trips/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -117,6 +150,9 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/trips/new'
     | '/trips'
+    | '/trips/$id/itinerary'
+    | '/trips/$id/plans'
+    | '/trips/$id/responses'
     | '/trips/$id'
   id:
     | '__root__'
@@ -128,6 +164,9 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/trips/new'
     | '/_authenticated/trips/'
+    | '/_authenticated/trips/$id/itinerary'
+    | '/_authenticated/trips/$id/plans'
+    | '/_authenticated/trips/$id/responses'
     | '/_authenticated/trips/$id/'
   fileRoutesById: FileRoutesById
 }
@@ -204,6 +243,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTripsIdIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/trips/$id/itinerary': {
+      id: '/_authenticated/trips/$id/itinerary'
+      path: '/trips/$id/itinerary'
+      fullPath: '/trips/$id/itinerary'
+      preLoaderRoute: typeof AuthenticatedTripsIdItineraryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/trips/$id/plans': {
+      id: '/_authenticated/trips/$id/plans'
+      path: '/trips/$id/plans'
+      fullPath: '/trips/$id/plans'
+      preLoaderRoute: typeof AuthenticatedTripsIdPlansRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/trips/$id/responses': {
+      id: '/_authenticated/trips/$id/responses'
+      path: '/trips/$id/responses'
+      fullPath: '/trips/$id/responses'
+      preLoaderRoute: typeof AuthenticatedTripsIdResponsesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -211,6 +271,9 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedTripsNewRoute: typeof AuthenticatedTripsNewRoute
   AuthenticatedTripsIndexRoute: typeof AuthenticatedTripsIndexRoute
+  AuthenticatedTripsIdItineraryRoute: typeof AuthenticatedTripsIdItineraryRoute
+  AuthenticatedTripsIdPlansRoute: typeof AuthenticatedTripsIdPlansRoute
+  AuthenticatedTripsIdResponsesRoute: typeof AuthenticatedTripsIdResponsesRoute
   AuthenticatedTripsIdIndexRoute: typeof AuthenticatedTripsIdIndexRoute
 }
 
@@ -218,6 +281,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedTripsNewRoute: AuthenticatedTripsNewRoute,
   AuthenticatedTripsIndexRoute: AuthenticatedTripsIndexRoute,
+  AuthenticatedTripsIdItineraryRoute: AuthenticatedTripsIdItineraryRoute,
+  AuthenticatedTripsIdPlansRoute: AuthenticatedTripsIdPlansRoute,
+  AuthenticatedTripsIdResponsesRoute: AuthenticatedTripsIdResponsesRoute,
   AuthenticatedTripsIdIndexRoute: AuthenticatedTripsIdIndexRoute,
 }
 

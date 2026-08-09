@@ -85,7 +85,7 @@ function PlansPage() {
         {
           trip_id: trip.id,
           plan_id: planId,
-          content: itinerary as unknown as Record<string, unknown>,
+          content: JSON.parse(JSON.stringify(itinerary)),
           budget_breakdown: { items: itinerary.budget_breakdown, total: plan.estimated_budget },
           packing_list: itinerary.packing_list,
         },
