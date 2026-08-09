@@ -81,10 +81,19 @@ function FormPage() {
   }
 
   async function submit() {
-    if (dates.length === 0) return toast.error("Pick at least one date you're available");
-    if (!budget) return toast.error("Choose a budget range");
-    if (interests.length === 0) return toast.error("Pick at least one interest");
-    if (notes.length > 300) return toast.error("Please keep notes under 300 characters");
+    if (dates.length === 0) {
+      toast.error("Pick at least one date you're available");
+      return;
+    }
+    if (!budget) {
+      toast.error("Choose a budget range");
+      return;
+    }
+    if (interests.length === 0) {
+      toast.error("Pick at least one interest");
+      return;
+    }
+
 
     setSaving(true);
     const { data: res, error } = await supabase.rpc("submit_participant_response", {
