@@ -10,33 +10,224 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedTripsIndexRouteImport } from './routes/_authenticated/trips.index'
+import { Route as AuthenticatedTripsNewRouteImport } from './routes/_authenticated/trips.new'
+import { Route as JoinTokenIndexRouteImport } from './routes/join.$token.index'
+import { Route as JoinTokenFormRouteImport } from './routes/join.$token.form'
+import { Route as JoinTokenSuccessRouteImport } from './routes/join.$token.success'
+import { Route as JoinTokenVoteRouteImport } from './routes/join.$token.vote'
+import { Route as AuthenticatedTripsIdIndexRouteImport } from './routes/_authenticated/trips.$id.index'
+import { Route as AuthenticatedTripsIdItineraryRouteImport } from './routes/_authenticated/trips.$id.itinerary'
+import { Route as AuthenticatedTripsIdPlansRouteImport } from './routes/_authenticated/trips.$id.plans'
+import { Route as AuthenticatedTripsIdResponsesRouteImport } from './routes/_authenticated/trips.$id.responses'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTripsIndexRoute = AuthenticatedTripsIndexRouteImport.update({
+  id: '/trips/',
+  path: '/trips/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTripsNewRoute = AuthenticatedTripsNewRouteImport.update({
+  id: '/trips/new',
+  path: '/trips/new',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const JoinTokenIndexRoute = JoinTokenIndexRouteImport.update({
+  id: '/join/$token/',
+  path: '/join/$token/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinTokenFormRoute = JoinTokenFormRouteImport.update({
+  id: '/join/$token/form',
+  path: '/join/$token/form',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinTokenSuccessRoute = JoinTokenSuccessRouteImport.update({
+  id: '/join/$token/success',
+  path: '/join/$token/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinTokenVoteRoute = JoinTokenVoteRouteImport.update({
+  id: '/join/$token/vote',
+  path: '/join/$token/vote',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedTripsIdIndexRoute =
+  AuthenticatedTripsIdIndexRouteImport.update({
+    id: '/trips/$id/',
+    path: '/trips/$id/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTripsIdItineraryRoute =
+  AuthenticatedTripsIdItineraryRouteImport.update({
+    id: '/trips/$id/itinerary',
+    path: '/trips/$id/itinerary',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTripsIdPlansRoute =
+  AuthenticatedTripsIdPlansRouteImport.update({
+    id: '/trips/$id/plans',
+    path: '/trips/$id/plans',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTripsIdResponsesRoute =
+  AuthenticatedTripsIdResponsesRouteImport.update({
+    id: '/trips/$id/responses',
+    path: '/trips/$id/responses',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/signup': typeof SignupRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/trips/new': typeof AuthenticatedTripsNewRoute
+  '/join/$token/form': typeof JoinTokenFormRoute
+  '/join/$token/success': typeof JoinTokenSuccessRoute
+  '/join/$token/vote': typeof JoinTokenVoteRoute
+  '/trips/': typeof AuthenticatedTripsIndexRoute
+  '/join/$token/': typeof JoinTokenIndexRoute
+  '/trips/$id/itinerary': typeof AuthenticatedTripsIdItineraryRoute
+  '/trips/$id/plans': typeof AuthenticatedTripsIdPlansRoute
+  '/trips/$id/responses': typeof AuthenticatedTripsIdResponsesRoute
+  '/trips/$id/': typeof AuthenticatedTripsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/signup': typeof SignupRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/trips/new': typeof AuthenticatedTripsNewRoute
+  '/join/$token/form': typeof JoinTokenFormRoute
+  '/join/$token/success': typeof JoinTokenSuccessRoute
+  '/join/$token/vote': typeof JoinTokenVoteRoute
+  '/trips': typeof AuthenticatedTripsIndexRoute
+  '/join/$token': typeof JoinTokenIndexRoute
+  '/trips/$id/itinerary': typeof AuthenticatedTripsIdItineraryRoute
+  '/trips/$id/plans': typeof AuthenticatedTripsIdPlansRoute
+  '/trips/$id/responses': typeof AuthenticatedTripsIdResponsesRoute
+  '/trips/$id': typeof AuthenticatedTripsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/signup': typeof SignupRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/trips/new': typeof AuthenticatedTripsNewRoute
+  '/join/$token/form': typeof JoinTokenFormRoute
+  '/join/$token/success': typeof JoinTokenSuccessRoute
+  '/join/$token/vote': typeof JoinTokenVoteRoute
+  '/_authenticated/trips/': typeof AuthenticatedTripsIndexRoute
+  '/join/$token/': typeof JoinTokenIndexRoute
+  '/_authenticated/trips/$id/itinerary': typeof AuthenticatedTripsIdItineraryRoute
+  '/_authenticated/trips/$id/plans': typeof AuthenticatedTripsIdPlansRoute
+  '/_authenticated/trips/$id/responses': typeof AuthenticatedTripsIdResponsesRoute
+  '/_authenticated/trips/$id/': typeof AuthenticatedTripsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/reset-password'
+    | '/signup'
+    | '/dashboard'
+    | '/trips/new'
+    | '/join/$token/form'
+    | '/join/$token/success'
+    | '/join/$token/vote'
+    | '/trips/'
+    | '/join/$token/'
+    | '/trips/$id/itinerary'
+    | '/trips/$id/plans'
+    | '/trips/$id/responses'
+    | '/trips/$id/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/login'
+    | '/reset-password'
+    | '/signup'
+    | '/dashboard'
+    | '/trips/new'
+    | '/join/$token/form'
+    | '/join/$token/success'
+    | '/join/$token/vote'
+    | '/trips'
+    | '/join/$token'
+    | '/trips/$id/itinerary'
+    | '/trips/$id/plans'
+    | '/trips/$id/responses'
+    | '/trips/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/login'
+    | '/reset-password'
+    | '/signup'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/trips/new'
+    | '/join/$token/form'
+    | '/join/$token/success'
+    | '/join/$token/vote'
+    | '/_authenticated/trips/'
+    | '/join/$token/'
+    | '/_authenticated/trips/$id/itinerary'
+    | '/_authenticated/trips/$id/plans'
+    | '/_authenticated/trips/$id/responses'
+    | '/_authenticated/trips/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  SignupRoute: typeof SignupRoute
+  JoinTokenFormRoute: typeof JoinTokenFormRoute
+  JoinTokenSuccessRoute: typeof JoinTokenSuccessRoute
+  JoinTokenVoteRoute: typeof JoinTokenVoteRoute
+  JoinTokenIndexRoute: typeof JoinTokenIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +239,148 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/trips/': {
+      id: '/_authenticated/trips/'
+      path: '/trips'
+      fullPath: '/trips/'
+      preLoaderRoute: typeof AuthenticatedTripsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/trips/new': {
+      id: '/_authenticated/trips/new'
+      path: '/trips/new'
+      fullPath: '/trips/new'
+      preLoaderRoute: typeof AuthenticatedTripsNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/join/$token/': {
+      id: '/join/$token/'
+      path: '/join/$token'
+      fullPath: '/join/$token/'
+      preLoaderRoute: typeof JoinTokenIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join/$token/form': {
+      id: '/join/$token/form'
+      path: '/join/$token/form'
+      fullPath: '/join/$token/form'
+      preLoaderRoute: typeof JoinTokenFormRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join/$token/success': {
+      id: '/join/$token/success'
+      path: '/join/$token/success'
+      fullPath: '/join/$token/success'
+      preLoaderRoute: typeof JoinTokenSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join/$token/vote': {
+      id: '/join/$token/vote'
+      path: '/join/$token/vote'
+      fullPath: '/join/$token/vote'
+      preLoaderRoute: typeof JoinTokenVoteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/trips/$id/': {
+      id: '/_authenticated/trips/$id/'
+      path: '/trips/$id'
+      fullPath: '/trips/$id/'
+      preLoaderRoute: typeof AuthenticatedTripsIdIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/trips/$id/itinerary': {
+      id: '/_authenticated/trips/$id/itinerary'
+      path: '/trips/$id/itinerary'
+      fullPath: '/trips/$id/itinerary'
+      preLoaderRoute: typeof AuthenticatedTripsIdItineraryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/trips/$id/plans': {
+      id: '/_authenticated/trips/$id/plans'
+      path: '/trips/$id/plans'
+      fullPath: '/trips/$id/plans'
+      preLoaderRoute: typeof AuthenticatedTripsIdPlansRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/trips/$id/responses': {
+      id: '/_authenticated/trips/$id/responses'
+      path: '/trips/$id/responses'
+      fullPath: '/trips/$id/responses'
+      preLoaderRoute: typeof AuthenticatedTripsIdResponsesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedTripsNewRoute: typeof AuthenticatedTripsNewRoute
+  AuthenticatedTripsIndexRoute: typeof AuthenticatedTripsIndexRoute
+  AuthenticatedTripsIdItineraryRoute: typeof AuthenticatedTripsIdItineraryRoute
+  AuthenticatedTripsIdPlansRoute: typeof AuthenticatedTripsIdPlansRoute
+  AuthenticatedTripsIdResponsesRoute: typeof AuthenticatedTripsIdResponsesRoute
+  AuthenticatedTripsIdIndexRoute: typeof AuthenticatedTripsIdIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedTripsNewRoute: AuthenticatedTripsNewRoute,
+  AuthenticatedTripsIndexRoute: AuthenticatedTripsIndexRoute,
+  AuthenticatedTripsIdItineraryRoute: AuthenticatedTripsIdItineraryRoute,
+  AuthenticatedTripsIdPlansRoute: AuthenticatedTripsIdPlansRoute,
+  AuthenticatedTripsIdResponsesRoute: AuthenticatedTripsIdResponsesRoute,
+  AuthenticatedTripsIdIndexRoute: AuthenticatedTripsIdIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  LoginRoute: LoginRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  SignupRoute: SignupRoute,
+  JoinTokenFormRoute: JoinTokenFormRoute,
+  JoinTokenSuccessRoute: JoinTokenSuccessRoute,
+  JoinTokenVoteRoute: JoinTokenVoteRoute,
+  JoinTokenIndexRoute: JoinTokenIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
