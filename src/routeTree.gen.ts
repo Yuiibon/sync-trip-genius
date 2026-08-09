@@ -17,6 +17,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedTripsIndexRouteImport } from './routes/_authenticated/trips.index'
 import { Route as AuthenticatedTripsNewRouteImport } from './routes/_authenticated/trips.new'
+import { Route as JoinTokenIndexRouteImport } from './routes/join.$token.index'
 import { Route as AuthenticatedTripsIdIndexRouteImport } from './routes/_authenticated/trips.$id.index'
 import { Route as AuthenticatedTripsIdItineraryRouteImport } from './routes/_authenticated/trips.$id.itinerary'
 import { Route as AuthenticatedTripsIdPlansRouteImport } from './routes/_authenticated/trips.$id.plans'
@@ -61,6 +62,11 @@ const AuthenticatedTripsNewRoute = AuthenticatedTripsNewRouteImport.update({
   path: '/trips/new',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const JoinTokenIndexRoute = JoinTokenIndexRouteImport.update({
+  id: '/join/$token/',
+  path: '/join/$token/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedTripsIdIndexRoute =
   AuthenticatedTripsIdIndexRouteImport.update({
     id: '/trips/$id/',
@@ -94,6 +100,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/trips/new': typeof AuthenticatedTripsNewRoute
   '/trips/': typeof AuthenticatedTripsIndexRoute
+  '/join/$token/': typeof JoinTokenIndexRoute
   '/trips/$id/itinerary': typeof AuthenticatedTripsIdItineraryRoute
   '/trips/$id/plans': typeof AuthenticatedTripsIdPlansRoute
   '/trips/$id/responses': typeof AuthenticatedTripsIdResponsesRoute
@@ -107,6 +114,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/trips/new': typeof AuthenticatedTripsNewRoute
   '/trips': typeof AuthenticatedTripsIndexRoute
+  '/join/$token': typeof JoinTokenIndexRoute
   '/trips/$id/itinerary': typeof AuthenticatedTripsIdItineraryRoute
   '/trips/$id/plans': typeof AuthenticatedTripsIdPlansRoute
   '/trips/$id/responses': typeof AuthenticatedTripsIdResponsesRoute
@@ -122,6 +130,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/trips/new': typeof AuthenticatedTripsNewRoute
   '/_authenticated/trips/': typeof AuthenticatedTripsIndexRoute
+  '/join/$token/': typeof JoinTokenIndexRoute
   '/_authenticated/trips/$id/itinerary': typeof AuthenticatedTripsIdItineraryRoute
   '/_authenticated/trips/$id/plans': typeof AuthenticatedTripsIdPlansRoute
   '/_authenticated/trips/$id/responses': typeof AuthenticatedTripsIdResponsesRoute
@@ -137,6 +146,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/trips/new'
     | '/trips/'
+    | '/join/$token/'
     | '/trips/$id/itinerary'
     | '/trips/$id/plans'
     | '/trips/$id/responses'
@@ -150,6 +160,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/trips/new'
     | '/trips'
+    | '/join/$token'
     | '/trips/$id/itinerary'
     | '/trips/$id/plans'
     | '/trips/$id/responses'
@@ -164,6 +175,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/trips/new'
     | '/_authenticated/trips/'
+    | '/join/$token/'
     | '/_authenticated/trips/$id/itinerary'
     | '/_authenticated/trips/$id/plans'
     | '/_authenticated/trips/$id/responses'
@@ -176,6 +188,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
+  JoinTokenIndexRoute: typeof JoinTokenIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -235,6 +248,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/trips/new'
       preLoaderRoute: typeof AuthenticatedTripsNewRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/join/$token/': {
+      id: '/join/$token/'
+      path: '/join/$token'
+      fullPath: '/join/$token/'
+      preLoaderRoute: typeof JoinTokenIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/trips/$id/': {
       id: '/_authenticated/trips/$id/'
@@ -296,6 +316,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
+  JoinTokenIndexRoute: JoinTokenIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
