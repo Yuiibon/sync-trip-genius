@@ -16,6 +16,8 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedTripsIndexRouteImport } from './routes/_authenticated/trips.index'
+import { Route as AuthenticatedTripsNewRouteImport } from './routes/_authenticated/trips.new'
+import { Route as AuthenticatedTripsIdIndexRouteImport } from './routes/_authenticated/trips.$id.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -51,6 +53,17 @@ const AuthenticatedTripsIndexRoute = AuthenticatedTripsIndexRouteImport.update({
   path: '/trips/',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTripsNewRoute = AuthenticatedTripsNewRouteImport.update({
+  id: '/trips/new',
+  path: '/trips/new',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTripsIdIndexRoute =
+  AuthenticatedTripsIdIndexRouteImport.update({
+    id: '/trips/$id/',
+    path: '/trips/$id/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -58,7 +71,9 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/trips/new': typeof AuthenticatedTripsNewRoute
   '/trips/': typeof AuthenticatedTripsIndexRoute
+  '/trips/$id/': typeof AuthenticatedTripsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -66,7 +81,9 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/trips/new': typeof AuthenticatedTripsNewRoute
   '/trips': typeof AuthenticatedTripsIndexRoute
+  '/trips/$id': typeof AuthenticatedTripsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -76,14 +93,31 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/trips/new': typeof AuthenticatedTripsNewRoute
   '/_authenticated/trips/': typeof AuthenticatedTripsIndexRoute
+  '/_authenticated/trips/$id/': typeof AuthenticatedTripsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/login' | '/reset-password' | '/signup' | '/dashboard' | '/trips/'
+    | '/'
+    | '/login'
+    | '/reset-password'
+    | '/signup'
+    | '/dashboard'
+    | '/trips/new'
+    | '/trips/'
+    | '/trips/$id/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/reset-password' | '/signup' | '/dashboard' | '/trips'
+  to:
+    | '/'
+    | '/login'
+    | '/reset-password'
+    | '/signup'
+    | '/dashboard'
+    | '/trips/new'
+    | '/trips'
+    | '/trips/$id'
   id:
     | '__root__'
     | '/'
@@ -92,7 +126,9 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/_authenticated/dashboard'
+    | '/_authenticated/trips/new'
     | '/_authenticated/trips/'
+    | '/_authenticated/trips/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -154,17 +190,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTripsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/trips/new': {
+      id: '/_authenticated/trips/new'
+      path: '/trips/new'
+      fullPath: '/trips/new'
+      preLoaderRoute: typeof AuthenticatedTripsNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/trips/$id/': {
+      id: '/_authenticated/trips/$id/'
+      path: '/trips/$id'
+      fullPath: '/trips/$id/'
+      preLoaderRoute: typeof AuthenticatedTripsIdIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedTripsNewRoute: typeof AuthenticatedTripsNewRoute
   AuthenticatedTripsIndexRoute: typeof AuthenticatedTripsIndexRoute
+  AuthenticatedTripsIdIndexRoute: typeof AuthenticatedTripsIdIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedTripsNewRoute: AuthenticatedTripsNewRoute,
   AuthenticatedTripsIndexRoute: AuthenticatedTripsIndexRoute,
+  AuthenticatedTripsIdIndexRoute: AuthenticatedTripsIdIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
