@@ -92,7 +92,7 @@ export async function seedDemoTrip() {
       p_style: pick(STYLES),
       p_accommodation: pick(STAYS),
       p_transportation: pick(TRANSPORT),
-      p_notes: Math.random() < 0.4 ? pick(NOTES) : null,
+      p_notes: Math.random() < 0.4 ? pick(NOTES) : "",
     });
   }
 
