@@ -1,18 +1,36 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
-import { Copy, Download, MapPin, MessageCircle, Sparkles } from "lucide-react";
+import {
+  Copy,
+  Download,
+  ExternalLink,
+  MapPin,
+  MessageCircle,
+  Navigation,
+  Printer,
+  Route as RouteIcon,
+  Sparkles,
+} from "lucide-react";
 
 import { EmptyState } from "@/components/app/EmptyState";
 import { ScoreRing } from "@/components/app/ScoreRing";
 import { TripHeader } from "@/components/app/TripHeader";
+import { ItineraryMap } from "@/components/Itinerary/ItineraryMap";
+import { SendEmailModal } from "@/components/Itinerary/SendEmailModal";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import { formatINR } from "@/lib/tripsync/constants";
 import type { GeneratedItinerary } from "@/lib/tripsync/engine";
 import { getItinerary, getPlans, getTrip } from "@/lib/tripsync/queries";
+import { geocodeItineraryStops } from "@/lib/tripsync/maps.functions";
+import { dayPoints, mapsDirectionsUrl, mapsRouteUrl, mapsSearchUrl } from "@/lib/tripsync/maps";
 import { inviteUrl, whatsappShareUrl } from "@/lib/tripsync/invite";
+
 
 export const Route = createFileRoute("/_authenticated/trips/$id/itinerary")({
   head: () => ({
@@ -38,11 +56,38 @@ function ItineraryPage() {
     },
   });
 
-  if (isLoading || !data) return <Skeleton className="h-96 rounded-2xl" />;
-  const { trip, plans, itinerary } = data;
-  const plan = plans.find((p) => p.is_selected) ?? null;
+  const [selectedDay, setSelectedDay] = useState(1);
+  const [activeStop, setActiveStop] = useState<number | null>(null);
 
-  if (!itinerary || !plan) {
+  const plan = data?.plans.find((p) => p.is_selected) ?? null;
+  const content = (data?.itinerary?.content ?? null) as GeneratedItinerary | null;
+  const destination = plan?.destination ?? data?.trip.destination ?? "";
+  const day = content?.days.find((d) => d.day === selectedDay) ?? content?.days[0] ?? null;
+
+  const points = useMemo(
+    () => (day ? dayPoints(day.items, destination) : []),
+    [day, destination],
+  );
+
+  const geocode = useServerFn(geocodeItineraryStops);
+  const geo = useQuery({
+    queryKey: ["geocode", points.map((p) => p.query)],
+    enabled: points.length > 0,
+    staleTime: Infinity,
+    retry: false,
+    queryFn: () => geocode({ data: { queries: points.slice(0, 12).map((p) => p.query) } }),
+  });
+
+  const mapPoints = points.map((p) => {
+    const hit = geo.data?.places.find((x) => x.query === p.query);
+    return hit && hit.lat != null && hit.lng != null ? { ...p, lat: hit.lat, lng: hit.lng } : p;
+  });
+
+  if (isLoading || !data) return <Skeleton className="h-96 rounded-2xl" />;
+  const { trip, itinerary } = data;
+
+
+  if (!itinerary || !plan || !content || !day) {
     return (
       <div className="space-y-8">
         <TripHeader trip={trip} />
@@ -62,27 +107,28 @@ function ItineraryPage() {
     );
   }
 
-  const content = itinerary.content as unknown as GeneratedItinerary;
   const url = inviteUrl(trip.invite_token);
+  const doc: GeneratedItinerary = content;
 
   function downloadItinerary() {
+
     const lines = [
       `${trip.trip_name} — ${plan!.destination}`,
       `${plan!.duration} days · ${formatINR(plan!.estimated_budget)} per person · ${plan!.compatibility_score}% group match`,
       "",
-      content.summary,
+      doc.summary,
       "",
-      ...content.days.flatMap((d) => [
+      ...doc.days.flatMap((d) => [
         `Day ${d.day} — ${d.title}`,
         ...d.items.map((i) => `  ${i.time}: ${i.text}`),
         "",
       ]),
       "Budget breakdown:",
-      ...content.budget_breakdown.map((b) => `  ${b.label}: ${formatINR(b.amount)}`),
+      ...doc.budget_breakdown.map((b) => `  ${b.label}: ${formatINR(b.amount)}`),
       `  Total: ${formatINR(plan!.estimated_budget)}`,
       "",
       "Packing list:",
-      ...content.packing_list.map((p) => `  - ${p}`),
+      ...doc.packing_list.map((p) => `  - ${p}`),
     ];
     const blob = new Blob([lines.join("\n")], { type: "text/plain" });
     const a = document.createElement("a");
@@ -116,30 +162,124 @@ function ItineraryPage() {
         </div>
       </section>
 
+      <div className="flex flex-wrap gap-2">
+        <Button asChild size="sm">
+          <a href={whatsappShareUrl(url, trip.trip_name)} target="_blank" rel="noopener noreferrer">
+            <MessageCircle className="size-4" /> Share via WhatsApp
+          </a>
+        </Button>
+        <Button variant="outline" size="sm" onClick={() => window.print()}>
+          <Printer className="size-4" /> Export PDF / Print
+        </Button>
+        <SendEmailModal tripId={trip.id} tripName={trip.trip_name} />
+        <Button asChild variant="outline" size="sm">
+          <a href={mapsRouteUrl(mapPoints)} target="_blank" rel="noopener noreferrer">
+            <RouteIcon className="size-4" /> Open Full Google Route
+          </a>
+        </Button>
+      </div>
+
       <div className="grid gap-5 lg:grid-cols-3">
         <section className="card-surface p-6 lg:col-span-2">
-          <h2 className="font-display text-lg font-semibold">Day by day</h2>
-          <ol className="mt-5 space-y-6">
-            {content.days.map((day) => (
-              <li key={day.day} className="relative border-l-2 border-border pl-5">
-                <span className="absolute -left-[7px] top-1 size-3 rounded-full bg-secondary" />
-                <h3 className="text-sm font-semibold">
-                  Day {day.day} — {day.title}
-                </h3>
-                <ul className="mt-2 space-y-1.5">
-                  {day.items.map((item, i) => (
-                    <li key={i} className="grid grid-cols-[70px_minmax(0,1fr)] gap-3 text-sm">
-                      <span className="text-xs font-medium text-muted-foreground">{item.time}</span>
-                      <span>{item.text}</span>
-                    </li>
-                  ))}
-                </ul>
-              </li>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-display text-lg font-semibold">Day by day</h2>
+            <Button asChild size="sm" variant="outline">
+              <a href={mapsRouteUrl(mapPoints)} target="_blank" rel="noopener noreferrer">
+                <RouteIcon className="size-4" /> Open Day {day.day} route
+              </a>
+            </Button>
+          </div>
+
+          <nav className="mt-4 flex gap-1 overflow-x-auto rounded-xl bg-muted p-1">
+            {content.days.map((d) => (
+              <button
+                key={d.day}
+                type="button"
+                onClick={() => {
+                  setSelectedDay(d.day);
+                  setActiveStop(null);
+                }}
+                className={cn(
+                  "shrink-0 rounded-lg px-3.5 py-2 text-sm font-medium transition-colors",
+                  d.day === day.day
+                    ? "bg-card text-foreground shadow-soft"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                Day {d.day}
+              </button>
             ))}
+          </nav>
+
+          <h3 className="mt-5 text-sm font-semibold">
+            Day {day.day} — {day.title}
+          </h3>
+
+          <ol className="mt-3 space-y-3">
+            {day.items.map((item, i) => {
+              const point = mapPoints[i]!;
+              return (
+                <li
+                  key={i}
+                  onMouseEnter={() => setActiveStop(i)}
+                  onMouseLeave={() => setActiveStop((cur) => (cur === i ? null : cur))}
+                  onClick={() => setActiveStop(i)}
+                  className={cn(
+                    "cursor-pointer rounded-xl border p-3.5 transition-colors",
+                    activeStop === i ? "border-secondary bg-secondary/5" : "hover:bg-muted/60",
+                  )}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-secondary text-[11px] font-semibold text-secondary-foreground">
+                      {i + 1}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-medium text-muted-foreground">{item.time}</p>
+                      <p className="text-sm">{item.text}</p>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        <Button asChild size="sm" variant="ghost" className="h-7 px-2 text-xs">
+                          <a href={mapsSearchUrl(point)} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink className="size-3.5" /> View on Google Maps
+                          </a>
+                        </Button>
+                        <Button asChild size="sm" variant="ghost" className="h-7 px-2 text-xs">
+                          <a
+                            href={mapsDirectionsUrl(point)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Navigation className="size-3.5" /> Get Directions
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
           </ol>
         </section>
 
         <div className="space-y-5">
+          <section className="card-surface p-6">
+            <div className="flex items-center gap-2">
+              <MapPin className="size-4 text-secondary" />
+              <h2 className="font-display text-lg font-semibold">Day {day.day} map</h2>
+            </div>
+            <ItineraryMap
+              className="mt-3 h-64"
+              points={mapPoints}
+              destination={plan.destination}
+              activeIndex={activeStop}
+              onActiveChange={setActiveStop}
+            />
+            <p className="mt-2 text-xs text-muted-foreground">
+              {geo.isFetching
+                ? "Locating stops…"
+                : "Hover a stop to highlight it on the map."}
+            </p>
+          </section>
+
           <section className="card-surface p-6">
             <h2 className="font-display text-lg font-semibold">Budget breakdown</h2>
             <div className="mx-auto mt-2 h-48">
@@ -171,25 +311,6 @@ function ItineraryPage() {
             </ul>
           </section>
 
-          <section className="card-surface p-6">
-            <div className="flex items-center gap-2">
-              <MapPin className="size-4 text-secondary" />
-              <h2 className="font-display text-lg font-semibold">Map</h2>
-            </div>
-            <div className="mt-3 grid h-44 place-items-center rounded-xl border border-dashed bg-muted text-center text-xs text-muted-foreground">
-              <div className="px-6">
-                <p className="font-medium text-foreground">{plan.destination}</p>
-                <p className="mt-1">
-                  Interactive map ready for Google Maps / Mapbox once credentials are added.
-                </p>
-              </div>
-            </div>
-            <ul className="mt-3 space-y-1 text-sm text-muted-foreground">
-              {plan.activities.slice(0, 5).map((a) => (
-                <li key={a}>📍 {a}</li>
-              ))}
-            </ul>
-          </section>
 
           <section className="card-surface space-y-2 p-6">
             <h2 className="font-display text-lg font-semibold">Share trip</h2>
