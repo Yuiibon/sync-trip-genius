@@ -80,7 +80,15 @@ function ItineraryPage() {
 
   const mapPoints = points.map((p) => {
     const hit = geo.data?.places.find((x) => x.query === p.query);
-    return hit && hit.lat != null && hit.lng != null ? { ...p, lat: hit.lat, lng: hit.lng } : p;
+    if (!hit || hit.lat == null || hit.lng == null) return p;
+    return {
+      ...p,
+      lat: hit.lat,
+      lng: hit.lng,
+      ...(hit.placeId ? { placeId: hit.placeId } : {}),
+      ...(hit.address ? { address: hit.address } : {}),
+      label: hit.name ?? p.label,
+    };
   });
 
   if (isLoading || !data) return <Skeleton className="h-96 rounded-2xl" />;
