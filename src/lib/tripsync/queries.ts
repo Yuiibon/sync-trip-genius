@@ -33,7 +33,16 @@ export type TripPlan = {
   score_interests: number;
   reasoning: string[];
   is_selected: boolean;
+  selected_hotel: HotelOption | null;
 };
+
+export async function setPlanHotel(planId: string, hotel: HotelOption) {
+  const { error } = await supabase
+    .from("trip_plans")
+    .update({ selected_hotel: hotel as unknown as Record<string, unknown> })
+    .eq("id", planId);
+  if (error) throw error;
+}
 
 export async function listTrips(): Promise<Trip[]> {
   const { data, error } = await supabase
