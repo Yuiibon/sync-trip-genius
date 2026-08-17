@@ -35,9 +35,9 @@ import { inviteUrl, whatsappShareUrl } from "@/lib/tripsync/invite";
 export const Route = createFileRoute("/_authenticated/trips/$id/itinerary")({
   head: () => ({
     meta: [
-      { title: "Final Itinerary — TripSync AI" },
+      { title: "Final Itinerary — CoJourney" },
       { name: "description", content: "The day-by-day plan, budget breakdown and packing list for your group trip." },
-      { property: "og:title", content: "Final Itinerary — TripSync AI" },
+      { property: "og:title", content: "Final Itinerary — CoJourney" },
       { property: "og:description", content: "Your group's finalized trip, day by day." },
     ],
   }),

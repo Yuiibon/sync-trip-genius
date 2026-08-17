@@ -23,7 +23,7 @@ export function Logo({
           inverted ? "text-primary-foreground" : "text-foreground",
         )}
       >
-        TripSync <span className="text-secondary">AI</span>
+        CoJourney <span className="text-secondary">AI</span>
       </span>
     </Link>
   );

@@ -18,12 +18,12 @@ import { listTrips, type Trip } from "@/lib/tripsync/queries";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Organizer Dashboard — TripSync AI" },
+      { title: "Organizer Dashboard — CoJourney" },
       {
         name: "description",
         content: "Track trips, response progress and AI-generated plans across all your groups.",
       },
-      { property: "og:title", content: "Organizer Dashboard — TripSync AI" },
+      { property: "og:title", content: "Organizer Dashboard — CoJourney" },
       { property: "og:description", content: "Track trips, responses and AI plans in one place." },
     ],
   }),

@@ -26,9 +26,9 @@ import {
 export const Route = createFileRoute("/_authenticated/trips/$id/plans")({
   head: () => ({
     meta: [
-      { title: "AI Trip Plans — TripSync AI" },
+      { title: "AI Trip Plans — CoJourney" },
       { name: "description", content: "Three compatible trip plans scored on availability, budget and interests." },
-      { property: "og:title", content: "AI Trip Plans — TripSync AI" },
+      { property: "og:title", content: "AI Trip Plans — CoJourney" },
       { property: "og:description", content: "Compare scored group trip plans and finalize one." },
     ],
   }),
