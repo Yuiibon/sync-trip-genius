@@ -18,13 +18,13 @@ export const Route = createFileRoute("/signup")({
   },
   head: () => ({
     meta: [
-      { title: "Create Your Organizer Account — TripSync AI" },
+      { title: "Create Your Organizer Account — CoJourney" },
       {
         name: "description",
         content:
-          "Sign up as a trip organizer on TripSync AI and start collecting anonymous group preferences with one link.",
+          "Sign up as a trip organizer on CoJourney and start collecting anonymous group preferences with one link.",
       },
-      { property: "og:title", content: "Create Your Organizer Account — TripSync AI" },
+      { property: "og:title", content: "Create Your Organizer Account — CoJourney" },
       {
         property: "og:description",
         content: "Start planning group trips that everyone actually agrees on.",

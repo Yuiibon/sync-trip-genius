@@ -14,9 +14,9 @@ export const Route = createFileRoute("/reset-password")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Reset Password — TripSync AI" },
-      { name: "description", content: "Set a new password for your TripSync AI organizer account." },
-      { property: "og:title", content: "Reset Password — TripSync AI" },
+      { title: "Reset Password — CoJourney" },
+      { name: "description", content: "Set a new password for your CoJourney organizer account." },
+      { property: "og:title", content: "Reset Password — CoJourney" },
       { property: "og:description", content: "Set a new password for your organizer account." },
       { name: "robots", content: "noindex" },
     ],

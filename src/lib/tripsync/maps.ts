@@ -41,31 +41,43 @@ export function extractPlaceName(text: string): string {
   return s.length >= 3 ? s : text.trim();
 }
 
+/**
+ * Fail-safe text target for a stop. Always a plain human-readable string —
+ * Google resolves these reliably, unlike place-id links that 404 when the id
+ * is stale or came from a different API surface.
+ */
 function target(point: MapPoint) {
-  if (point.lat != null && point.lng != null) return `${point.lat},${point.lng}`;
-  return point.address ?? point.query;
+  const text = [point.label?.trim(), point.address?.trim() || point.query?.trim()]
+    .filter(Boolean)
+    .join(" ")
+    .trim();
+  return text || point.query || "";
+}
+
+/** Plain text place query — never place-id only, so the link always resolves. */
+export function placeQuery(name: string, cityOrAddress?: string) {
+  const text = [name?.trim(), cityOrAddress?.trim()].filter(Boolean).join(" ").trim();
+  return encodeURIComponent(text);
 }
 
 export function mapsSearchUrl(point: MapPoint) {
-  const params = new URLSearchParams({
-    api: "1",
-    query: point.address ?? point.query,
-  });
-  if (point.placeId) params.set("query_place_id", point.placeId);
-  else if (point.lat != null && point.lng != null) params.set("query", `${point.lat},${point.lng}`);
-  return `https://www.google.com/maps/search/?${params.toString()}`;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(target(point))}`;
 }
 
 export function mapsDirectionsUrl(point: MapPoint, origin?: string) {
-  const params = new URLSearchParams({
-    api: "1",
-    destination: point.address ?? point.query,
-  });
-  if (point.placeId) params.set("destination_place_id", point.placeId);
-  else params.set("destination", target(point));
-  if (origin) params.set("origin", origin);
-  params.set("travelmode", "driving");
-  return `https://www.google.com/maps/dir/?${params.toString()}`;
+  const base = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+    target(point),
+  )}&travelmode=driving`;
+  return origin ? `${base}&origin=${encodeURIComponent(origin)}` : base;
+}
+
+/** Convenience helpers for simple name + city cards (hotels, restaurants). */
+export function searchUrlFor(name: string, cityOrAddress?: string) {
+  return `https://www.google.com/maps/search/?api=1&query=${placeQuery(name, cityOrAddress)}`;
+}
+
+export function directionsUrlFor(name: string, cityOrAddress?: string) {
+  return `https://www.google.com/maps/dir/?api=1&destination=${placeQuery(name, cityOrAddress)}`;
 }
 
 /** Multi-waypoint route through an entire day's sequence of stops. */
