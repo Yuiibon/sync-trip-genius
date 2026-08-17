@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { ParticipantResponse, ScoredPlan, TripInput } from "./engine";
+import type { HotelOption } from "./hotels";
 
 export type Trip = {
   id: string;
@@ -39,7 +40,7 @@ export type TripPlan = {
 export async function setPlanHotel(planId: string, hotel: HotelOption) {
   const { error } = await supabase
     .from("trip_plans")
-    .update({ selected_hotel: hotel as unknown as Record<string, unknown> })
+    .update({ selected_hotel: JSON.parse(JSON.stringify(hotel)) })
     .eq("id", planId);
   if (error) throw error;
 }
