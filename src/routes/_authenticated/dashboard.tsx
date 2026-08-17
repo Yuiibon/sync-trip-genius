@@ -106,6 +106,17 @@ function DashboardPage() {
         </div>
       </header>
 
+      <section className="bg-brand relative overflow-hidden rounded-3xl px-6 py-8 text-primary-foreground shadow-lift sm:px-10 sm:py-10">
+        <div className="pointer-events-none absolute -right-10 -top-16 size-56 rounded-full bg-secondary/25 blur-3xl" />
+        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary-foreground/70">
+          CoJourney
+        </p>
+        <blockquote className="mt-3 max-w-2xl font-display text-2xl font-bold leading-snug sm:text-3xl">
+          “Where separate paths align into shared memories.”
+        </blockquote>
+      </section>
+
+
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {isLoading ? (
           Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[116px] rounded-2xl" />)
