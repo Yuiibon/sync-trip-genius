@@ -18,13 +18,13 @@ export const Route = createFileRoute("/login")({
   },
   head: () => ({
     meta: [
-      { title: "Organizer Login — CoJourney" },
+      { title: "Organizer Login — TripSync AI" },
       {
         name: "description",
-        content: "Log in to your CoJourney organizer account to manage trips, responses and AI plans.",
+        content: "Log in to your TripSync AI organizer account to manage trips, responses and AI plans.",
       },
-      { property: "og:title", content: "Organizer Login — CoJourney" },
-      { property: "og:description", content: "Log in to manage your group trips on CoJourney." },
+      { property: "og:title", content: "Organizer Login — TripSync AI" },
+      { property: "og:description", content: "Log in to manage your group trips on TripSync AI." },
     ],
   }),
   component: LoginPage,
@@ -116,7 +116,7 @@ function LoginPage() {
         </Button>
       </form>
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        New to CoJourney?{" "}
+        New to TripSync AI?{" "}
         <Link to="/signup" className="font-semibold text-secondary hover:underline">
           Create an account
         </Link>

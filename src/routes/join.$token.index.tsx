@@ -10,7 +10,7 @@ export const Route = createFileRoute("/join/$token/")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "You're Invited — CoJourney" },
+      { title: "You're Invited — TripSync AI" },
       { name: "description", content: "Share your availability, budget and interests anonymously for your group trip." },
       { property: "og:title", content: "You're invited to plan a trip" },
       { property: "og:description", content: "Tap to share your dates, budget and interests. No login needed." },
@@ -25,7 +25,7 @@ export function JoinShell({ children }: { children: React.ReactNode }) {
       <Logo className="mb-6" />
       <div className="w-full max-w-lg">{children}</div>
       <p className="mt-8 text-center text-[11px] text-muted-foreground">
-        Powered by CoJourney · Responses are anonymous
+        Powered by TripSync AI · Responses are anonymous
       </p>
     </div>
   );
@@ -38,7 +38,7 @@ export function InviteError({ title, text }: { title: string; text: string }) {
         <h1 className="font-display text-xl font-semibold">{title}</h1>
         <p className="mt-2 text-sm text-muted-foreground">{text}</p>
         <Button asChild variant="outline" className="mt-6">
-          <Link to="/">Go to CoJourney</Link>
+          <Link to="/">Go to TripSync AI</Link>
         </Button>
       </div>
     </JoinShell>

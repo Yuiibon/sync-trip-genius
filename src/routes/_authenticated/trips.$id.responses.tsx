@@ -13,9 +13,9 @@ import { Users } from "lucide-react";
 export const Route = createFileRoute("/_authenticated/trips/$id/responses")({
   head: () => ({
     meta: [
-      { title: "Group Response Analysis — CoJourney" },
+      { title: "Group Response Analysis — TripSync AI" },
       { name: "description", content: "Availability heatmap, interest split and budget distribution for your group." },
-      { property: "og:title", content: "Group Response Analysis — CoJourney" },
+      { property: "og:title", content: "Group Response Analysis — TripSync AI" },
       { property: "og:description", content: "See what your group actually agreed on." },
     ],
   }),

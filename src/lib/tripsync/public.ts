@@ -14,9 +14,6 @@ export type PublicPlan = {
   activities: string[];
   compatibility_score: number;
   reasoning: string[];
-  vote_count?: number;
-  is_selected?: boolean;
-  selected_hotel?: import("./hotels").HotelOption | null;
 };
 
 export type PublicTrip = {
@@ -35,7 +32,6 @@ export type PublicTrip = {
   };
   already_responded?: boolean;
   already_voted?: boolean;
-  voted_plan_id?: string | null;
   response_count?: number;
   plans?: PublicPlan[];
 };

@@ -79,13 +79,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "CoJourney — Group Trip Planning That Actually Agrees" },
+      { title: "TripSync AI — Group Trip Planning That Actually Agrees" },
       {
         name: "description",
         content:
-          "CoJourney collects everyone's availability, budget and interests through one WhatsApp link, then builds the trip plan that works for the whole group.",
+          "TripSync AI collects everyone's availability, budget and interests through one WhatsApp link, then builds the trip plan that works for the whole group.",
       },
-      { name: "author", content: "CoJourney" },
+      { name: "author", content: "TripSync AI" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

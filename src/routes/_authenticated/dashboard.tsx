@@ -18,12 +18,12 @@ import { listTrips, type Trip } from "@/lib/tripsync/queries";
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "Organizer Dashboard — CoJourney" },
+      { title: "Organizer Dashboard — TripSync AI" },
       {
         name: "description",
         content: "Track trips, response progress and AI-generated plans across all your groups.",
       },
-      { property: "og:title", content: "Organizer Dashboard — CoJourney" },
+      { property: "og:title", content: "Organizer Dashboard — TripSync AI" },
       { property: "og:description", content: "Track trips, responses and AI plans in one place." },
     ],
   }),
@@ -105,17 +105,6 @@ function DashboardPage() {
           </Button>
         </div>
       </header>
-
-      <section className="bg-brand relative overflow-hidden rounded-3xl px-6 py-8 text-primary-foreground shadow-lift sm:px-10 sm:py-10">
-        <div className="pointer-events-none absolute -right-10 -top-16 size-56 rounded-full bg-secondary/25 blur-3xl" />
-        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary-foreground/70">
-          CoJourney
-        </p>
-        <blockquote className="mt-3 max-w-2xl font-display text-2xl font-bold leading-snug sm:text-3xl">
-          “Where separate paths align into shared memories.”
-        </blockquote>
-      </section>
-
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {isLoading ? (

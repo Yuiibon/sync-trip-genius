@@ -83,7 +83,7 @@ export function renderItineraryEmail(input: ItineraryEmailInput) {
 <html><body style="margin:0;padding:24px 12px;background:#f5f7fb;font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">
   <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 8px 30px rgba(17,26,46,0.08);">
     <tr><td style="background:${NAVY};padding:28px 28px 24px;color:#ffffff;">
-      <p style="margin:0;font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:${AMBER};">CoJourney</p>
+      <p style="margin:0;font-size:12px;letter-spacing:1.4px;text-transform:uppercase;color:${AMBER};">TripSync AI</p>
       <h1 style="margin:8px 0 6px;font-size:26px;line-height:1.2;">${esc(tripName)}</h1>
       <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.75);">${esc(destination)} · ${duration} days${dates ? ` · ${esc(dates)}` : ""}</p>
       <p style="margin:14px 0 0;font-size:13px;color:rgba(255,255,255,0.75);">${participantCount} travellers · ${compatibilityScore}% group match</p>
@@ -111,7 +111,7 @@ export function renderItineraryEmail(input: ItineraryEmailInput) {
     <tr><td style="padding:0 28px 32px;text-align:center;">
       <a href="${appUrl}" style="display:inline-block;background:${TEAL};color:#ffffff;font-size:14px;font-weight:700;padding:14px 26px;border-radius:12px;text-decoration:none;">Open the live trip dashboard</a>
       ${day1Route ? `<p style="margin:14px 0 0;"><a href="${day1Route}" style="color:${NAVY};font-size:13px;font-weight:600;text-decoration:none;">Open Day 1 route in Google Maps →</a></p>` : ""}
-      <p style="margin:20px 0 0;font-size:11px;color:${MUTED};">Sent by CoJourney · plan trips together, effortlessly.</p>
+      <p style="margin:20px 0 0;font-size:11px;color:${MUTED};">Sent by TripSync AI · plan trips together, effortlessly.</p>
     </td></tr>
   </table>
 </body></html>`;
@@ -130,5 +130,5 @@ export function renderItineraryEmail(input: ItineraryEmailInput) {
     appUrl,
   ].join("\n");
 
-  return { html, text, subject: `Your CoJourney itinerary — ${tripName} (${destination})` };
+  return { html, text, subject: `Your TripSync itinerary — ${tripName} (${destination})` };
 }

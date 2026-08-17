@@ -16,7 +16,7 @@ export const Route = createFileRoute("/join/$token/vote")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Vote On The Plans — CoJourney" },
+      { title: "Vote On The Plans — TripSync AI" },
       { name: "description", content: "Pick the trip plan that works best for you. Votes stay anonymous." },
       { property: "og:title", content: "Vote on the trip plans" },
       { property: "og:description", content: "Pick the plan that works best for you — anonymously." },
@@ -51,7 +51,9 @@ function VotePage() {
       />
     );
   }
-  const votedPlanId = data.voted_plan_id ?? null;
+  if (data.already_voted) {
+    return <InviteError title="Vote recorded" text="You've already voted. Thanks — your choice stays anonymous." />;
+  }
 
   async function vote(planId: string) {
     setVoting(planId);
@@ -63,14 +65,10 @@ function VotePage() {
     setVoting(null);
     const result = res as unknown as { ok: boolean; error?: string } | null;
     if (error || !result?.ok) {
-      toast.error(
-        result?.error === "closed"
-          ? "The organizer has already locked in the final plan."
-          : "Something went wrong. Please try again.",
-      );
+      toast.error(result?.error === "duplicate" ? "You've already voted." : "Something went wrong. Please try again.");
       return;
     }
-    toast.success("Vote recorded — you can change it any time.");
+    toast.success("Vote recorded — thank you!");
     await queryClient.invalidateQueries({ queryKey: ["public-trip"] });
   }
 
@@ -80,25 +78,12 @@ function VotePage() {
         <div className="card-surface p-6 text-center">
           <h1 className="font-display text-xl font-bold">Choose the plan that works best for you</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Votes are anonymous. One vote per person — you can switch it any time.
+            Votes are anonymous. One vote per person.
           </p>
         </div>
 
-        {plans.map((plan) => {
-          const mine = votedPlanId === plan.id;
-          return (
-          <article
-            key={plan.id}
-            className={
-              "card-surface p-5" +
-              (plan.is_selected ? " border-2 border-[oklch(0.78_0.15_85)]" : mine ? " border-2 border-secondary" : "")
-            }
-          >
-            {plan.is_selected ? (
-              <p className="mb-2 inline-flex rounded-full bg-[oklch(0.78_0.15_85)]/15 px-2.5 py-1 text-[11px] font-semibold text-[oklch(0.55_0.13_85)]">
-                FINALIZED PLAN
-              </p>
-            ) : null}
+        {plans.map((plan) => (
+          <article key={plan.id} className="card-surface p-5">
             <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
               <div className="min-w-0">
                 <h2 className="truncate text-base font-semibold">{plan.plan_name}</h2>
@@ -117,23 +102,12 @@ function VotePage() {
                 </span>
               ))}
             </div>
-            <div className="mt-4 flex items-center gap-2">
-              <span className="flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs font-medium">
-                <ThumbsUp className="size-3.5" /> {plan.vote_count ?? 0} Votes
-              </span>
-              <Button
-                className="flex-1"
-                variant={mine ? "secondary" : "default"}
-                onClick={() => vote(plan.id)}
-                disabled={!!voting}
-              >
-                {voting === plan.id ? <Loader2 className="size-4 animate-spin" /> : <ThumbsUp className="size-4" />}
-                {mine ? "Your vote" : "Vote for this plan"}
-              </Button>
-            </div>
+            <Button className="mt-4 w-full" onClick={() => vote(plan.id)} disabled={!!voting}>
+              {voting === plan.id ? <Loader2 className="size-4 animate-spin" /> : <ThumbsUp className="size-4" />}
+              Vote
+            </Button>
           </article>
-          );
-        })}
+        ))}
       </div>
     </JoinShell>
   );

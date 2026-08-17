@@ -1,5 +1,5 @@
 /**
- * CoJourney — group compatibility engine.
+ * TripSync AI — group compatibility engine.
  *
  * Pure, deterministic scoring layer over the structured responses collected
  * from participants. These functions are intentionally framework-free and
