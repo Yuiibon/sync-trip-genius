@@ -28,7 +28,7 @@ import { formatINR } from "@/lib/tripsync/constants";
 import type { GeneratedItinerary } from "@/lib/tripsync/engine";
 import { getItinerary, getPlans, getTrip } from "@/lib/tripsync/queries";
 import { geocodeItineraryStops } from "@/lib/tripsync/maps.functions";
-import { dayPoints, mapsDirectionsUrl, mapsRouteUrl, mapsSearchUrl } from "@/lib/tripsync/maps";
+import { dayPoints, directionsUrlFor, mapsDirectionsUrl, mapsRouteUrl, mapsSearchUrl, searchUrlFor } from "@/lib/tripsync/maps";
 import { inviteUrl, whatsappShareUrl } from "@/lib/tripsync/invite";
 
 
@@ -117,6 +117,29 @@ function ItineraryPage() {
 
   const url = inviteUrl(trip.invite_token);
   const doc: GeneratedItinerary = content;
+
+  function summaryText() {
+    const hotel = plan!.selected_hotel;
+    return [
+      `${trip.trip_name} — ${plan!.destination}`,
+      `${plan!.duration} days · ${formatINR(plan!.estimated_budget)} per person`,
+      hotel ? `Stay: ${hotel.name} (${hotel.rating.toFixed(1)}★) — ${searchUrlFor(hotel.name, plan!.destination)}` : "",
+      "",
+      ...doc.days.flatMap((d) => [
+        `Day ${d.day} — ${d.title}`,
+        ...d.items.map((i) => `  ${i.time}: ${i.text}`),
+        `  Route: ${mapsRouteUrl(dayPoints(d.items, destination))}`,
+        "",
+      ]),
+    ]
+      .filter((l) => l !== "")
+      .join("\n");
+  }
+
+  async function copySummary() {
+    await navigator.clipboard.writeText(summaryText());
+    toast.success("Trip summary copied");
+  }
 
   function downloadItinerary() {
 
@@ -320,6 +343,40 @@ function ItineraryPage() {
           </section>
 
 
+          {plan.selected_hotel ? (
+            <section className="card-surface space-y-3 p-6">
+              <h2 className="font-display text-lg font-semibold">Your stay</h2>
+              <img
+                src={plan.selected_hotel.photo}
+                alt={plan.selected_hotel.name}
+                loading="lazy"
+                className="h-32 w-full rounded-xl object-cover"
+              />
+              <p className="text-sm font-semibold">{plan.selected_hotel.name}</p>
+              <p className="text-xs text-muted-foreground">
+                {plan.selected_hotel.rating.toFixed(1)} ★ · {plan.selected_hotel.reviews.toLocaleString("en-IN")} reviews ·{" "}
+                {formatINR(plan.selected_hotel.pricePerNight)}/night
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {plan.selected_hotel.amenities.map((a) => (
+                  <span key={a} className="rounded-full bg-muted px-2 py-0.5 text-[10px]">{a}</span>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <Button asChild size="sm" variant="outline" className="flex-1">
+                  <a href={searchUrlFor(plan.selected_hotel.name, plan.destination)} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="size-3.5" /> Maps
+                  </a>
+                </Button>
+                <Button asChild size="sm" variant="outline" className="flex-1">
+                  <a href={directionsUrlFor(plan.selected_hotel.name, plan.destination)} target="_blank" rel="noopener noreferrer">
+                    <Navigation className="size-3.5" /> Directions
+                  </a>
+                </Button>
+              </div>
+            </section>
+          ) : null}
+
           <section className="card-surface space-y-2 p-6">
             <h2 className="font-display text-lg font-semibold">Share trip</h2>
             <Button
@@ -339,6 +396,9 @@ function ItineraryPage() {
             </Button>
             <Button variant="outline" className="w-full" onClick={downloadItinerary}>
               <Download className="size-4" /> Download Itinerary
+            </Button>
+            <Button variant="outline" className="w-full" onClick={copySummary}>
+              <Copy className="size-4" /> Export / Share Summary
             </Button>
           </section>
         </div>
