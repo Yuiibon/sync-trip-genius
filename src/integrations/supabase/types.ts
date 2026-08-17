@@ -146,6 +146,7 @@ export type Database = {
           score_availability: number
           score_budget: number
           score_interests: number
+          selected_hotel: Json | null
           trip_id: string
         }
         Insert: {
@@ -163,6 +164,7 @@ export type Database = {
           score_availability?: number
           score_budget?: number
           score_interests?: number
+          selected_hotel?: Json | null
           trip_id: string
         }
         Update: {
@@ -180,6 +182,7 @@ export type Database = {
           score_availability?: number
           score_budget?: number
           score_interests?: number
+          selected_hotel?: Json | null
           trip_id?: string
         }
         Relationships: [
