@@ -16,7 +16,7 @@ export const Route = createFileRoute("/join/$token/vote")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Vote On The Plans — TripSync AI" },
+      { title: "Vote On The Plans — Co-Journey" },
       { name: "description", content: "Pick the trip plan that works best for you. Votes stay anonymous." },
       { property: "og:title", content: "Vote on the trip plans" },
       { property: "og:description", content: "Pick the plan that works best for you — anonymously." },

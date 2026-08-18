@@ -13,9 +13,9 @@ import type { Trip } from "@/lib/tripsync/queries";
 export const Route = createFileRoute("/_authenticated/trips/")({
   head: () => ({
     meta: [
-      { title: "My Trips — TripSync AI" },
+      { title: "My Trips — Co-Journey" },
       { name: "description", content: "Every group trip you organize, with live response progress." },
-      { property: "og:title", content: "My Trips — TripSync AI" },
+      { property: "og:title", content: "My Trips — Co-Journey" },
       { property: "og:description", content: "Every group trip you organize, in one list." },
     ],
   }),

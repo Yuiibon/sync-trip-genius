@@ -15,9 +15,9 @@ import { makeInviteToken } from "@/lib/tripsync/invite";
 export const Route = createFileRoute("/_authenticated/trips/new")({
   head: () => ({
     meta: [
-      { title: "Create a Trip — TripSync AI" },
+      { title: "Create a Trip — Co-Journey" },
       { name: "description", content: "Set up a group trip and generate a shareable invitation link." },
-      { property: "og:title", content: "Create a Trip — TripSync AI" },
+      { property: "og:title", content: "Create a Trip — Co-Journey" },
       { property: "og:description", content: "Set up a group trip in under a minute." },
     ],
   }),

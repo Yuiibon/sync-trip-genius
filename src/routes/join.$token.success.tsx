@@ -9,7 +9,7 @@ export const Route = createFileRoute("/join/$token/success")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Preferences Submitted — TripSync AI" },
+      { title: "Preferences Submitted — Co-Journey" },
       { name: "description", content: "Your anonymous preferences were added to the group plan." },
       { property: "og:title", content: "Preferences submitted" },
       { property: "og:description", content: "Your anonymous preferences were added to the group plan." },
