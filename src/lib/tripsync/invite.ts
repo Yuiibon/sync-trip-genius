@@ -42,8 +42,12 @@ export function whatsappShareUrl(url: string, tripName: string, destination?: st
   return buildWhatsAppUrl(inviteMessage(tripName, destination), url);
 }
 
+export function shareText(message: string, url: string) {
+  return `${message}\n\nJoin here: ${url}`;
+}
+
 export function buildWhatsAppUrl(message: string, url: string) {
-  return `https://wa.me/?text=${encodeURIComponent(`${message}\n\nJoin here: ${url}`)}`;
+  return `https://wa.me/?text=${encodeURIComponent(shareText(message, url))}`;
 }
 
 /**
