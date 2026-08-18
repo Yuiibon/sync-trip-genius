@@ -50,7 +50,11 @@ function TripOverview() {
           <p className="mb-4 mt-1 text-sm text-muted-foreground">
             One link for the preference form and, later, plan voting. No login required.
           </p>
-          <InviteShare token={trip.invite_token} tripName={trip.trip_name} />
+          <InviteShare
+            token={trip.invite_token}
+            tripName={trip.trip_name}
+            destination={trip.destination ?? undefined}
+          />
         </div>
 
         <div className="card-surface p-6">

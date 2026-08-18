@@ -60,11 +60,13 @@ export function ShareDialog({
   onOpenChange,
   token,
   tripName,
+  destination,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   token: string | null;
   tripName: string;
+  destination?: string;
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -75,7 +77,7 @@ export function ShareDialog({
             Drop this in the group chat. Participants answer anonymously — no login, no app.
           </DialogDescription>
         </DialogHeader>
-        {token ? <InviteShare token={token} tripName={tripName} /> : null}
+        {token ? <InviteShare token={token} tripName={tripName} destination={destination} /> : null}
       </DialogContent>
     </Dialog>
   );

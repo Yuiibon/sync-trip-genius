@@ -170,6 +170,7 @@ function DashboardPage() {
         onOpenChange={(v) => !v && setShare(null)}
         token={share?.invite_token ?? null}
         tripName={share?.trip_name ?? ""}
+        destination={share?.destination ?? undefined}
       />
     </div>
   );
