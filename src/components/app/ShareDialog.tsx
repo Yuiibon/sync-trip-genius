@@ -1,4 +1,4 @@
-import { Check, Copy, MessageCircle } from "lucide-react";
+import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -11,9 +11,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { inviteUrl, whatsappShareUrl } from "@/lib/tripsync/invite";
+import { inviteMessage, inviteUrl } from "@/lib/tripsync/invite";
+import { WhatsAppShareButton } from "@/components/app/WhatsAppShareButton";
 
-export function InviteShare({ token, tripName }: { token: string; tripName: string }) {
+export function InviteShare({
+  token,
+  tripName,
+  destination,
+}: {
+  token: string;
+  tripName: string;
+  destination?: string;
+}) {
   const [copied, setCopied] = useState(false);
   const url = inviteUrl(token);
 
@@ -21,7 +30,7 @@ export function InviteShare({ token, tripName }: { token: string; tripName: stri
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
-      toast.success("Invitation link copied");
+      toast.success("Invite link copied to clipboard!");
       setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error("Couldn't copy — long-press the link to copy it manually.");
@@ -35,11 +44,12 @@ export function InviteShare({ token, tripName }: { token: string; tripName: stri
         <Button variant="outline" className="flex-1" onClick={copy}>
           {copied ? <Check className="size-4" /> : <Copy className="size-4" />} Copy Link
         </Button>
-        <Button asChild className="flex-1">
-          <a href={whatsappShareUrl(url, tripName)} target="_blank" rel="noopener noreferrer">
-            <MessageCircle className="size-4" /> Share on WhatsApp
-          </a>
-        </Button>
+        <WhatsAppShareButton
+          className="flex-1"
+          label="Share Invite via WhatsApp"
+          message={inviteMessage(tripName, destination)}
+          url={url}
+        />
       </div>
     </div>
   );
