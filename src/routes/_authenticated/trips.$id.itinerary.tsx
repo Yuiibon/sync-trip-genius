@@ -9,7 +9,6 @@ import {
   Download,
   ExternalLink,
   MapPin,
-  MessageCircle,
   Navigation,
   Printer,
   Route as RouteIcon,
@@ -29,7 +28,8 @@ import type { GeneratedItinerary } from "@/lib/tripsync/engine";
 import { getItinerary, getPlans, getTrip } from "@/lib/tripsync/queries";
 import { geocodeItineraryStops } from "@/lib/tripsync/maps.functions";
 import { dayPoints, mapsDirectionsUrl, mapsRouteUrl, mapsSearchUrl } from "@/lib/tripsync/maps";
-import { inviteUrl, whatsappShareUrl } from "@/lib/tripsync/invite";
+import { inviteUrl, itineraryMessage } from "@/lib/tripsync/invite";
+import { WhatsAppShareButton } from "@/components/app/WhatsAppShareButton";
 
 
 export const Route = createFileRoute("/_authenticated/trips/$id/itinerary")({
@@ -171,11 +171,12 @@ function ItineraryPage() {
       </section>
 
       <div className="flex flex-wrap gap-2">
-        <Button asChild size="sm">
-          <a href={whatsappShareUrl(url, trip.trip_name)} target="_blank" rel="noopener noreferrer">
-            <MessageCircle className="size-4" /> Share via WhatsApp
-          </a>
-        </Button>
+        <WhatsAppShareButton
+          size="sm"
+          label="Share Finalized Trip to WhatsApp"
+          message={itineraryMessage(plan.destination)}
+          url={url}
+        />
         <Button variant="outline" size="sm" onClick={() => window.print()}>
           <Printer className="size-4" /> Export PDF / Print
         </Button>
@@ -332,11 +333,11 @@ function ItineraryPage() {
             >
               <Copy className="size-4" /> Copy Trip Link
             </Button>
-            <Button asChild className="w-full">
-              <a href={whatsappShareUrl(url, trip.trip_name)} target="_blank" rel="noopener noreferrer">
-                <MessageCircle className="size-4" /> Share on WhatsApp
-              </a>
-            </Button>
+            <WhatsAppShareButton
+              className="w-full"
+              message={itineraryMessage(plan.destination)}
+              url={url}
+            />
             <Button variant="outline" className="w-full" onClick={downloadItinerary}>
               <Download className="size-4" /> Download Itinerary
             </Button>
