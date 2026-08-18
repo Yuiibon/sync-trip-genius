@@ -21,7 +21,7 @@ export function InviteShare({
 }: {
   token: string;
   tripName: string;
-  destination?: string;
+  destination?: string | undefined;
 }) {
   const [copied, setCopied] = useState(false);
   const url = inviteUrl(token);
@@ -66,7 +66,7 @@ export function ShareDialog({
   onOpenChange: (v: boolean) => void;
   token: string | null;
   tripName: string;
-  destination?: string;
+  destination?: string | undefined;
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
