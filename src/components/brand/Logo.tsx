@@ -23,7 +23,7 @@ export function Logo({
           inverted ? "text-primary-foreground" : "text-foreground",
         )}
       >
-        Co-Journey <span className="text-secondary">AI</span>
+        Co<span className="text-secondary">-</span>Journey
       </span>
     </Link>
   );
