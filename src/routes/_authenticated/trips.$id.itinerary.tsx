@@ -9,7 +9,6 @@ import {
   Download,
   ExternalLink,
   MapPin,
-  MessageCircle,
   Navigation,
   Printer,
   Route as RouteIcon,
