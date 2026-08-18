@@ -1,4 +1,4 @@
-import { Check, Copy } from "lucide-react";
+import { Check, Copy, RotateCcw } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -11,6 +11,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { inviteMessage, inviteUrl } from "@/lib/tripsync/invite";
 import { WhatsAppShareButton } from "@/components/app/WhatsAppShareButton";
 
@@ -24,7 +26,10 @@ export function InviteShare({
   destination?: string | undefined;
 }) {
   const [copied, setCopied] = useState(false);
+  const defaultMessage = inviteMessage(tripName, destination);
+  const [message, setMessage] = useState(defaultMessage);
   const url = inviteUrl(token);
+  const finalMessage = message.trim() || defaultMessage;
 
   async function copy() {
     try {
@@ -39,6 +44,33 @@ export function InviteShare({
 
   return (
     <div className="space-y-3">
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between">
+          <Label htmlFor="invite-message">Message to participants</Label>
+          {message !== defaultMessage ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-xs"
+              onClick={() => setMessage(defaultMessage)}
+            >
+              <RotateCcw className="size-3" /> Reset
+            </Button>
+          ) : null}
+        </div>
+        <Textarea
+          id="invite-message"
+          rows={4}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Write a personal note for your group…"
+        />
+        <p className="text-xs text-muted-foreground">
+          This note is sent along with the invite link when you share.
+        </p>
+      </div>
+
       <Input readOnly value={url} className="font-mono text-xs sm:text-sm" onFocus={(e) => e.currentTarget.select()} />
       <div className="flex flex-col gap-2 sm:flex-row">
         <Button variant="outline" className="flex-1" onClick={copy}>
@@ -47,7 +79,7 @@ export function InviteShare({
         <WhatsAppShareButton
           className="flex-1"
           label="Share Invite via WhatsApp"
-          message={inviteMessage(tripName, destination)}
+          message={finalMessage}
           url={url}
         />
       </div>

@@ -19,13 +19,13 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "TripSync AI — Plan Together. Decide Faster. Travel Better." },
+      { title: "Co-Journey — Plan Together. Decide Faster. Travel Better." },
       {
         name: "description",
         content:
-          "One WhatsApp link collects everyone's dates, budget and interests anonymously. TripSync AI turns them into compatible trip plans and a final itinerary.",
+          "One WhatsApp link collects everyone's dates, budget and interests anonymously. Co-Journey turns them into compatible trip plans and a final itinerary.",
       },
-      { property: "og:title", content: "TripSync AI — Plan Together. Decide Faster. Travel Better." },
+      { property: "og:title", content: "Co-Journey — Plan Together. Decide Faster. Travel Better." },
       {
         property: "og:description",
         content:
@@ -126,7 +126,7 @@ function Landing() {
                 <span className="text-gradient-brand">Travel Better.</span>
               </h1>
               <p className="mt-6 max-w-xl text-base text-muted-foreground sm:text-lg">
-                TripSync AI brings everyone's availability, budget, and interests together to
+                Co-Journey brings everyone's availability, budget, and interests together to
                 create the trip plan that actually works for the whole group.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
@@ -157,7 +157,7 @@ function Landing() {
               <div className="absolute -inset-6 -z-10 rounded-[3rem] bg-secondary/10 blur-3xl" />
               <img
                 src={heroImage}
-                alt="TripSync AI dashboard showing an itinerary timeline, availability heatmap and connected group members"
+                alt="Co-Journey dashboard showing an itinerary timeline, availability heatmap and connected group members"
                 width={1600}
                 height={1200}
                 className="w-full rounded-3xl shadow-lift"

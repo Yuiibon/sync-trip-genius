@@ -30,7 +30,7 @@ export function WhatsAppShareButton({
     if (isMobile && nav?.share) {
       e.preventDefault();
       nav
-        .share({ title: "TripSync AI", text: shareText(message, url) })
+        .share({ title: "Co-Journey", text: shareText(message, url) })
         .catch(() => window.open(waUrl, "_blank", "noopener,noreferrer"));
       return;
     }

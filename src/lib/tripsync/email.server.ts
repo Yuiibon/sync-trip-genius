@@ -15,7 +15,7 @@ export async function sendItineraryEmailViaResend(args: {
     );
   }
 
-  const from = process.env["RESEND_FROM"] ?? "TripSync AI <onboarding@resend.dev>";
+  const from = process.env["RESEND_FROM"] ?? "Co-Journey <onboarding@resend.dev>";
   const { html, text, subject } = renderItineraryEmail(args.payload);
 
   const res = await fetch(`${GATEWAY_URL}/emails`, {

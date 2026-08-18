@@ -23,7 +23,7 @@ export const Route = createFileRoute("/join/$token/form")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Tell Us What Works For You — TripSync AI" },
+      { title: "Tell Us What Works For You — Co-Journey" },
       { name: "description", content: "Submit your dates, budget and interests anonymously in under a minute." },
       { property: "og:title", content: "Tell us what works for you" },
       { property: "og:description", content: "Anonymous preferences for your group trip." },

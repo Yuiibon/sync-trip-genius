@@ -30,7 +30,7 @@ export function inviteUrl(token: string) {
 /** Pre-filled invite message sent by the organizer to friends. */
 export function inviteMessage(tripName: string, destination?: string) {
   const where = destination?.trim() ? destination.trim() : tripName;
-  return `Hey! 🌴 I'm setting up our trip to ${where} on TripSync AI! Tap the link below to pick your free dates, budget and favourite spots so the AI can build our ideal plan:`;
+  return `Hey! 🌴 I'm setting up our trip to ${where} on Co-Journey! Tap the link below to pick your free dates, budget and favourite spots so the AI can build our ideal plan:`;
 }
 
 /** Pre-filled message for a finalized itinerary. */
@@ -54,7 +54,7 @@ export function buildWhatsAppUrl(message: string, url: string) {
  * Opens WhatsApp with a pre-filled message. Uses the native share sheet on
  * mobile when available, otherwise falls back to the wa.me deep link.
  */
-export async function shareToWhatsApp(message: string, url: string, title = "TripSync AI") {
+export async function shareToWhatsApp(message: string, url: string, title = "Co-Journey") {
   const waUrl = buildWhatsAppUrl(message, url);
   const isMobile =
     typeof navigator !== "undefined" && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
