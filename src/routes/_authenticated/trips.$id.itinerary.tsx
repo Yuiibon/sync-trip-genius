@@ -29,7 +29,8 @@ import type { GeneratedItinerary } from "@/lib/tripsync/engine";
 import { getItinerary, getPlans, getTrip } from "@/lib/tripsync/queries";
 import { geocodeItineraryStops } from "@/lib/tripsync/maps.functions";
 import { dayPoints, mapsDirectionsUrl, mapsRouteUrl, mapsSearchUrl } from "@/lib/tripsync/maps";
-import { inviteUrl, whatsappShareUrl } from "@/lib/tripsync/invite";
+import { inviteUrl, itineraryMessage } from "@/lib/tripsync/invite";
+import { WhatsAppShareButton } from "@/components/app/WhatsAppShareButton";
 
 
 export const Route = createFileRoute("/_authenticated/trips/$id/itinerary")({
