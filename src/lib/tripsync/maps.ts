@@ -24,8 +24,8 @@ export function extractPlaceName(text: string): string {
   s = s.replace(/^\s*\d{1,2}[:.]\d{2}\s*(am|pm)?\s*[–—\-:]\s*/i, "");
 
   // Keep only the first clause — the rest is usually narrative.
-  s = s.split(/\s+(?:then|and then|before|after that|followed by)\s+/i)[0]!;
-  s = s.split(/[;.]|\s+[–—]\s+/)[0]!;
+  s = s.split(/\s+(?:then|and then|before|after that|followed by)\s+/i)[0] ?? s;
+  s = s.split(/[;.]|\s+[–—]\s+/)[0] ?? s;
 
   // Prefer the object of a leading action verb / preposition.
   const m = s.match(
@@ -65,7 +65,6 @@ export function mapsDirectionsUrl(point: MapPoint, origin?: string) {
   else params.set("destination", target(point));
   if (origin) params.set("origin", origin);
   params.set("travelmode", "driving");
-  params.set("dir_action", "navigate");
   return `https://www.google.com/maps/dir/?${params.toString()}`;
 }
 
@@ -74,17 +73,29 @@ export function mapsRouteUrl(points: MapPoint[]) {
   const stops = points.filter((p) => (p.address ?? p.query).trim().length > 0);
   if (stops.length === 0) return "https://www.google.com/maps";
   if (stops.length === 1) return mapsDirectionsUrl(stops[0]!);
-  const origin = target(stops[0]!);
-  const destination = target(stops[stops.length - 1]!);
-  const waypoints = stops.slice(1, -1).map(target);
+
+  const start = stops[0]!;
+  const end = stops[stops.length - 1]!;
+  const mids = stops.slice(1, -1).slice(0, 9);
+
   const params = new URLSearchParams({
     api: "1",
-    origin,
-    destination,
+    origin: target(start),
+    destination: target(end),
     travelmode: "driving",
-    dir_action: "navigate",
   });
-  if (waypoints.length) params.set("waypoints", waypoints.slice(0, 9).join("|"));
+
+  if (start.placeId) params.set("origin_place_id", start.placeId);
+  if (end.placeId) params.set("destination_place_id", end.placeId);
+
+  if (mids.length > 0) {
+    params.set("waypoints", mids.map(target).join("|"));
+    const pids = mids.map((m) => m.placeId ?? "").join("|");
+    if (pids.replace(/\|/g, "").length > 0) {
+      params.set("waypoint_place_ids", pids);
+    }
+  }
+
   return `https://www.google.com/maps/dir/?${params.toString()}`;
 }
 
@@ -93,10 +104,10 @@ export function dayPoints(
   items: { time: string; text: string }[],
   destination: string,
 ): MapPoint[] {
-  const city = destination.split(",")[0]!.trim();
+  const city = (destination || "").split(",")[0]?.trim() || "";
   return items.map((item) => {
     const place = extractPlaceName(item.text);
-    const query = place.toLowerCase().includes(city.toLowerCase()) ? place : `${place}, ${city}`;
+    const query = city && !place.toLowerCase().includes(city.toLowerCase()) ? `${place}, ${city}` : place;
     return { query, label: place, time: item.time };
   });
 }
