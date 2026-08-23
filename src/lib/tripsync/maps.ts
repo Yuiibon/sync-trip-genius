@@ -68,6 +68,7 @@ export function mapsDirectionsUrl(point: MapPoint, origin?: string) {
   else params.set("destination", target(point));
   if (origin) params.set("origin", origin);
   params.set("travelmode", "driving");
+  params.set("dir_action", "navigate");
   return `https://www.google.com/maps/dir/?${params.toString()}`;
 }
 
@@ -86,6 +87,7 @@ export function mapsRouteUrl(points: MapPoint[]) {
     origin: target(start),
     destination: target(end),
     travelmode: "driving",
+    dir_action: "navigate",
   });
 
   if (start.placeId) params.set("origin_place_id", start.placeId);

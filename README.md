@@ -21,6 +21,18 @@ npm i
 npm run dev
 ```
 
+### Google Maps when running locally
+
+Create a local `.env.local` file (do not commit it) and add your browser-restricted Maps key:
+
+```sh
+VITE_GOOGLE_MAPS_API_KEY="your-browser-key"
+```
+
+Enable **Maps JavaScript API** for that key and allow both `http://localhost:8080/*` and
+`http://127.0.0.1:8080/*` in its HTTP referrer restrictions. Google Maps search and directions
+buttons use official Maps URLs and do not require a key; the key is only needed for the embedded map.
+
 ## Built with
 
 - TanStack Start
