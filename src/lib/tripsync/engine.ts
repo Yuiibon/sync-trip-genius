@@ -216,7 +216,13 @@ const CATALOG: CandidatePlan[] = [
     destination: "Ooty, India",
     duration: 3,
     estimated_budget: 6800,
-    activities: ["Doddabetta trek", "Tea garden tour", "Scenic viewpoints", "Boathouse", "Nilgiri toy train"],
+    activities: [
+      "Doddabetta Peak",
+      "Government Botanical Garden, Ooty",
+      "Ooty Lake Boat House",
+      "The Tea Factory and The Tea Museum",
+      "Nilgiri Mountain Railway, Udagamandalam",
+    ],
     tags: ["nature", "trekking", "photography", "camping"],
   },
   {
@@ -301,7 +307,54 @@ function buildReasoning(
   return out;
 }
 
-/** Ranks candidate destinations against the group and returns the top 3 plans. */
+function sameDestinationVariants(
+  base: CandidatePlan,
+  trip: TripInput,
+  analysis: TripAnalysis,
+): CandidatePlan[] {
+  const city = trip.destination.split(",")[0]?.trim() || trip.destination.trim();
+  const duration = trip.duration || base.duration;
+  const midpoint = Math.max(1, Math.round(analysis.medianBudget));
+  const withinTripBudget = (amount: number) =>
+    Math.max(trip.budget_min, Math.min(trip.budget_max, Math.round(amount / 100) * 100));
+  const activities = base.activities.length
+    ? base.activities
+    : [`Top sights in ${city}`, `Local food tour in ${city}`, `Nature experience in ${city}`];
+
+  return [
+    {
+      ...base,
+      key: `${base.key}-balanced`,
+      plan_name: `${city} Highlights`,
+      destination: trip.destination.trim(),
+      duration,
+      estimated_budget: withinTripBudget(midpoint),
+      activities,
+    },
+    {
+      ...base,
+      key: `${base.key}-explorer`,
+      plan_name: `${city} Explorer`,
+      destination: trip.destination.trim(),
+      duration,
+      estimated_budget: withinTripBudget(midpoint * 1.08),
+      activities: [...activities.slice(1), activities[0]].filter((item): item is string => Boolean(item)),
+      tags: [...new Set([...base.tags, "adventure", "photography"])],
+    },
+    {
+      ...base,
+      key: `${base.key}-relaxed`,
+      plan_name: `${city} Slow & Scenic`,
+      destination: trip.destination.trim(),
+      duration,
+      estimated_budget: withinTripBudget(midpoint * 0.92),
+      activities: [...activities].reverse(),
+      tags: [...new Set([...base.tags, "nature", "food"])],
+    },
+  ];
+}
+
+/** Scores three styles within the organizer's selected destination. */
 export function generateRecommendations(trip: TripInput, analysis: TripAnalysis): ScoredPlan[] {
   const home = trip.destination.trim();
   const homeKey = home.toLowerCase();
@@ -324,17 +377,15 @@ export function generateRecommendations(trip: TripInput, analysis: TripAnalysis)
         tags: fallbackTags,
       };
 
-  const alternates = CATALOG.filter((c) => c.key !== primary.key);
-  const candidates = [primary, ...alternates];
+  const candidates = sameDestinationVariants(primary, trip, analysis);
 
   const scored = candidates
     .map((plan) => {
       const scores = calculateCompatibilityScore(plan, analysis);
-      const bonus = plan.key === primary.key ? 4 : 0;
       return {
         ...plan,
         dates: seasonalDates(analysis, plan.duration),
-        compatibility_score: Math.min(99, scores.overall + bonus),
+        compatibility_score: Math.min(99, scores.overall),
         score_availability: scores.availability,
         score_budget: scores.budget,
         score_interests: scores.interests,
@@ -343,14 +394,7 @@ export function generateRecommendations(trip: TripInput, analysis: TripAnalysis)
     })
     .sort((a, b) => b.compatibility_score - a.compatibility_score);
 
-  const picked: ScoredPlan[] = [];
-  const primaryScored = scored.find((s) => s.key === primary.key);
-  if (primaryScored) picked.push(primaryScored);
-  for (const s of scored) {
-    if (picked.length >= 3) break;
-    if (!picked.some((p) => p.key === s.key)) picked.push(s);
-  }
-  return picked.sort((a, b) => b.compatibility_score - a.compatibility_score);
+  return scored.slice(0, 3);
 }
 
 export type ItineraryDay = { day: number; title: string; items: { time: string; text: string }[] };
@@ -382,9 +426,9 @@ export function generateItinerary(
         title: "Arrival & easy start",
         items: [
           { time: "Morning", text: `Arrive in ${city}, group meet-up point` },
-          { time: "Noon", text: "Hotel check-in and freshen up" },
-          { time: "Lunch", text: "Local welcome lunch near the stay" },
-          { time: "Evening", text: acts[0] ?? "Sunset spot walk" },
+          { time: "Noon", text: acts[0] ?? `Central ${city}` },
+          { time: "Afternoon", text: acts[1 % acts.length] ?? acts[0] ?? `Central ${city}` },
+          { time: "Evening", text: acts[2 % acts.length] ?? acts[0] ?? `Central ${city}` },
           { time: "Night", text: "Group dinner and trip briefing" },
         ],
       });
@@ -393,8 +437,8 @@ export function generateItinerary(
         day: d,
         title: "Wrap up & return",
         items: [
-          { time: "Morning", text: "Breakfast and last-minute souvenir shopping" },
-          { time: "Noon", text: "Checkout and group photo" },
+          { time: "Morning", text: acts[(d + 1) % acts.length] ?? `Central ${city}` },
+          { time: "Noon", text: acts[(d + 2) % acts.length] ?? `Central ${city}` },
           { time: "Afternoon", text: "Return journey" },
         ],
       });
@@ -405,11 +449,9 @@ export function generateItinerary(
         day: d,
         title: a1,
         items: [
-          { time: "Breakfast", text: "Breakfast at the stay" },
           { time: "Morning", text: a1 },
-          { time: "Lunch", text: "Local speciality lunch" },
           { time: "Afternoon", text: a2 },
-          { time: "Night", text: d % 2 === 0 ? "Night market / live music" : "Relaxed dinner" },
+          { time: "Evening", text: acts[(d + 1) % acts.length] ?? a1 },
         ],
       });
     }

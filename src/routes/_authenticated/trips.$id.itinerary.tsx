@@ -39,6 +39,8 @@ export const Route = createFileRoute("/_authenticated/trips/$id/itinerary")({
       { name: "description", content: "The day-by-day plan, budget breakdown and packing list for your group trip." },
       { property: "og:title", content: "Final Itinerary — Co-Journey" },
       { property: "og:description", content: "Your group's finalized trip, day by day." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ItineraryPage,
@@ -226,7 +228,8 @@ function ItineraryPage() {
 
           <ol className="mt-3 space-y-3">
             {day.items.map((item, i) => {
-              const point = mapPoints[i]!;
+      const point = mapPoints[i];
+      if (!point) return null;
               return (
                 <li
                   key={i}

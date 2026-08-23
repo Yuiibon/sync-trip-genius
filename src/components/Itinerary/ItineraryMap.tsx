@@ -61,6 +61,7 @@ export function ItineraryMap({
   const mapRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
   const lineRef = useRef<any>(null);
+  const [resolvedPoints, setResolvedPoints] = useState<MapPoint[]>(points);
   const [status, setStatus] = useState<"loading" | "ready" | "error">(
     GOOGLE_MAPS_BROWSER_KEY ? "loading" : "error",
   );
@@ -76,7 +77,46 @@ export function ItineraryMap({
     };
   }, []);
 
-  const located = points.filter((p) => p.lat != null && p.lng != null);
+  useEffect(() => {
+    setResolvedPoints(points);
+  }, [points]);
+
+  useEffect(() => {
+    if (status !== "ready" || !window.google?.maps || points.length === 0) return;
+    if (points.every((point) => point.lat != null && point.lng != null)) return;
+
+    let cancelled = false;
+    const geocoder = new window.google.maps.Geocoder();
+    Promise.all(
+      points.map(async (point) => {
+        if (point.lat != null && point.lng != null) return point;
+        try {
+          const response = await geocoder.geocode({ address: point.query });
+          const result = response.results?.[0];
+          if (!result) return point;
+          return {
+            ...point,
+            lat: result.geometry.location.lat(),
+            lng: result.geometry.location.lng(),
+            address: result.formatted_address,
+            placeId: result.place_id,
+          };
+        } catch {
+          return point;
+        }
+      }),
+    ).then((next) => {
+      if (!cancelled) setResolvedPoints(next);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [points, status]);
+
+  const locatedResolved = resolvedPoints.filter(
+    (point): point is MapPoint & { lat: number; lng: number } =>
+      point.lat != null && point.lng != null,
+  );
 
   useEffect(() => {
     if (status !== "ready" || !containerRef.current || !window.google?.maps) return;
@@ -84,8 +124,11 @@ export function ItineraryMap({
 
     if (!mapRef.current) {
       mapRef.current = new google.maps.Map(containerRef.current, {
-        center: { lat: located[0]?.lat ?? 20.5937, lng: located[0]?.lng ?? 78.9629 },
-        zoom: located.length ? 12 : 5,
+        center: {
+          lat: locatedResolved[0]?.lat ?? 20.5937,
+          lng: locatedResolved[0]?.lng ?? 78.9629,
+        },
+        zoom: locatedResolved.length ? 12 : 5,
         mapTypeControl: false,
         streetViewControl: false,
       });
@@ -96,40 +139,40 @@ export function ItineraryMap({
     lineRef.current?.setMap(null);
 
     const bounds = new google.maps.LatLngBounds();
-    located.forEach((point, i) => {
-      const position = { lat: point.lat!, lng: point.lng! };
+    locatedResolved.forEach((point, i) => {
+      const position = { lat: point.lat, lng: point.lng };
       const marker = new google.maps.Marker({
         position,
         map: mapRef.current,
         label: { text: String(i + 1), color: "#ffffff", fontSize: "12px" },
         title: point.label,
       });
-      marker.addListener("click", () => onActiveChange?.(points.indexOf(point)));
+      marker.addListener("click", () => onActiveChange?.(resolvedPoints.indexOf(point)));
       markersRef.current.push(marker);
       bounds.extend(position);
     });
 
-    if (located.length > 1) {
+    if (locatedResolved.length > 1) {
       lineRef.current = new google.maps.Polyline({
-        path: located.map((p) => ({ lat: p.lat!, lng: p.lng! })),
+        path: locatedResolved.map((p) => ({ lat: p.lat, lng: p.lng })),
         map: mapRef.current,
         strokeColor: "#0f9b8e",
         strokeOpacity: 0.8,
         strokeWeight: 3,
       });
       mapRef.current.fitBounds(bounds, 48);
-    } else if (located.length === 1) {
+    } else if (locatedResolved.length === 1) {
       mapRef.current.setCenter(bounds.getCenter());
       mapRef.current.setZoom(13);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status, JSON.stringify(located)]);
+  }, [status, JSON.stringify(locatedResolved)]);
 
   useEffect(() => {
     if (status !== "ready" || !window.google?.maps) return;
     markersRef.current.forEach((marker, i) => {
-      const point = located[i];
-      const isActive = point ? points.indexOf(point) === activeIndex : false;
+      const point = locatedResolved[i];
+      const isActive = point ? resolvedPoints.indexOf(point) === activeIndex : false;
       marker.setAnimation(isActive ? window.google.maps.Animation.BOUNCE : null);
       marker.setZIndex(isActive ? 999 : 1);
       if (isActive) mapRef.current?.panTo(marker.getPosition());

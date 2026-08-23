@@ -24,14 +24,17 @@ export function extractPlaceName(text: string): string {
   s = s.replace(/^\s*\d{1,2}[:.]\d{2}\s*(am|pm)?\s*[–—\-:]\s*/i, "");
 
   // Keep only the first clause — the rest is usually narrative.
-  s = s.split(/\s+(?:then|and then|before|after that|followed by)\s+/i)[0]!;
-  s = s.split(/[;.]|\s+[–—]\s+/)[0]!;
+  s = s.split(/\s+(?:then|and then|before|after that|followed by)\s+/i)[0] ?? s;
+  s = s.split(/[;.]|\s+[–—]\s+/)[0] ?? s;
 
-  // Prefer the object of a leading action verb / preposition.
-  const m = s.match(
-    /\b(?:at|to|in|visit|explore|tour of|check in(?:to)?|arrive at|head to|stroll through)\s+(.+)$/i,
+  // Prefer explicit venue phrases without matching fragments such as the
+  // "in" inside "check-in".
+  s = s.replace(
+    /^(?:visit|explore|tour of|check in(?:to)?|arrive (?:at|in)|head to|stroll through)\s+/i,
+    "",
   );
-  if (m?.[1]) s = m[1];
+  const venue = s.match(/\b(?:at|to)\s+(.+)$/i);
+  if (venue?.[1]) s = venue[1];
 
   // Trim trailing parentheticals and filler.
   s = s.replace(/\([^)]*\)/g, "").trim();
@@ -65,6 +68,7 @@ export function mapsDirectionsUrl(point: MapPoint, origin?: string) {
   else params.set("destination", target(point));
   if (origin) params.set("origin", origin);
   params.set("travelmode", "driving");
+  params.set("dir_action", "navigate");
   return `https://www.google.com/maps/dir/?${params.toString()}`;
 }
 
@@ -73,11 +77,30 @@ export function mapsRouteUrl(points: MapPoint[]) {
   const stops = points.filter((p) => (p.address ?? p.query).trim().length > 0);
   if (stops.length === 0) return "https://www.google.com/maps";
   if (stops.length === 1) return mapsDirectionsUrl(stops[0]!);
-  const origin = target(stops[0]!);
-  const destination = target(stops[stops.length - 1]!);
-  const waypoints = stops.slice(1, -1).map(target);
-  const params = new URLSearchParams({ api: "1", origin, destination, travelmode: "driving" });
-  if (waypoints.length) params.set("waypoints", waypoints.slice(0, 9).join("|"));
+
+  const start = stops[0]!;
+  const end = stops[stops.length - 1]!;
+  const mids = stops.slice(1, -1).slice(0, 9);
+
+  const params = new URLSearchParams({
+    api: "1",
+    origin: target(start),
+    destination: target(end),
+    travelmode: "driving",
+    dir_action: "navigate",
+  });
+
+  if (start.placeId) params.set("origin_place_id", start.placeId);
+  if (end.placeId) params.set("destination_place_id", end.placeId);
+
+  if (mids.length > 0) {
+    params.set("waypoints", mids.map(target).join("|"));
+    const pids = mids.map((m) => m.placeId ?? "").join("|");
+    if (pids.replace(/\|/g, "").length > 0) {
+      params.set("waypoint_place_ids", pids);
+    }
+  }
+
   return `https://www.google.com/maps/dir/?${params.toString()}`;
 }
 
@@ -86,15 +109,22 @@ export function dayPoints(
   items: { time: string; text: string }[],
   destination: string,
 ): MapPoint[] {
-  const city = destination.split(",")[0]!.trim();
+  const city = (destination || "").split(",")[0]?.trim() || "";
   return items.map((item) => {
     const place = extractPlaceName(item.text);
-    const query = place.toLowerCase().includes(city.toLowerCase()) ? place : `${place}, ${city}`;
+    const genericStop =
+      /\b(arriv|check[ -]?in|freshen|breakfast|lunch|dinner|briefing|checkout|return journey|group photo|souvenir|stay)\b/i.test(
+        place,
+      );
+    const searchablePlace = genericStop ? city : place;
+    const query = city && !searchablePlace.toLowerCase().includes(city.toLowerCase())
+      ? `${searchablePlace}, ${city}`
+      : searchablePlace;
     return { query, label: place, time: item.time };
   });
 }
 
 export const GOOGLE_MAPS_BROWSER_KEY =
-  (import.meta.env["VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY"] as string | undefined) ??
   (import.meta.env["VITE_GOOGLE_MAPS_API_KEY"] as string | undefined) ??
+  (import.meta.env["VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY"] as string | undefined) ??
   "";
