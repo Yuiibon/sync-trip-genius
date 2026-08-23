@@ -30,6 +30,8 @@ export const Route = createFileRoute("/_authenticated/trips/$id/plans")({
       { name: "description", content: "Three compatible trip plans scored on availability, budget and interests." },
       { property: "og:title", content: "AI Trip Plans — Co-Journey" },
       { property: "og:description", content: "Compare scored group trip plans and finalize one." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: PlansPage,
@@ -77,7 +79,8 @@ function PlansPage() {
   async function finalize(planId: string) {
     setFinalizing(true);
     try {
-      const plan = plans.find((p) => p.id === planId)!;
+      const plan = plans.find((p) => p.id === planId);
+      if (!plan) throw new Error("That plan is no longer available. Please refresh and try again.");
       const itinerary = generateItinerary(plan, analysis);
       await supabase.from("trip_plans").update({ is_selected: false }).eq("trip_id", trip.id);
       await supabase.from("trip_plans").update({ is_selected: true }).eq("id", planId);

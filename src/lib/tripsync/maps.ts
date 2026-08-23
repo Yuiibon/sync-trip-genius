@@ -65,6 +65,7 @@ export function mapsDirectionsUrl(point: MapPoint, origin?: string) {
   else params.set("destination", target(point));
   if (origin) params.set("origin", origin);
   params.set("travelmode", "driving");
+  params.set("dir_action", "navigate");
   return `https://www.google.com/maps/dir/?${params.toString()}`;
 }
 
@@ -76,7 +77,13 @@ export function mapsRouteUrl(points: MapPoint[]) {
   const origin = target(stops[0]!);
   const destination = target(stops[stops.length - 1]!);
   const waypoints = stops.slice(1, -1).map(target);
-  const params = new URLSearchParams({ api: "1", origin, destination, travelmode: "driving" });
+  const params = new URLSearchParams({
+    api: "1",
+    origin,
+    destination,
+    travelmode: "driving",
+    dir_action: "navigate",
+  });
   if (waypoints.length) params.set("waypoints", waypoints.slice(0, 9).join("|"));
   return `https://www.google.com/maps/dir/?${params.toString()}`;
 }

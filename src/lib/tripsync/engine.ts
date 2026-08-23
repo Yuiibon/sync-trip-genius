@@ -301,7 +301,54 @@ function buildReasoning(
   return out;
 }
 
-/** Ranks candidate destinations against the group and returns the top 3 plans. */
+function sameDestinationVariants(
+  base: CandidatePlan,
+  trip: TripInput,
+  analysis: TripAnalysis,
+): CandidatePlan[] {
+  const city = trip.destination.split(",")[0]?.trim() || trip.destination.trim();
+  const duration = trip.duration || base.duration;
+  const midpoint = Math.max(1, Math.round(analysis.medianBudget));
+  const withinTripBudget = (amount: number) =>
+    Math.max(trip.budget_min, Math.min(trip.budget_max, Math.round(amount / 100) * 100));
+  const activities = base.activities.length
+    ? base.activities
+    : [`Top sights in ${city}`, `Local food tour in ${city}`, `Nature experience in ${city}`];
+
+  return [
+    {
+      ...base,
+      key: `${base.key}-balanced`,
+      plan_name: `${city} Highlights`,
+      destination: trip.destination.trim(),
+      duration,
+      estimated_budget: withinTripBudget(midpoint),
+      activities,
+    },
+    {
+      ...base,
+      key: `${base.key}-explorer`,
+      plan_name: `${city} Explorer`,
+      destination: trip.destination.trim(),
+      duration,
+      estimated_budget: withinTripBudget(midpoint * 1.08),
+      activities: [...activities.slice(1), activities[0]].filter((item): item is string => Boolean(item)),
+      tags: [...new Set([...base.tags, "adventure", "photography"])],
+    },
+    {
+      ...base,
+      key: `${base.key}-relaxed`,
+      plan_name: `${city} Slow & Scenic`,
+      destination: trip.destination.trim(),
+      duration,
+      estimated_budget: withinTripBudget(midpoint * 0.92),
+      activities: [...activities].reverse(),
+      tags: [...new Set([...base.tags, "nature", "food"])],
+    },
+  ];
+}
+
+/** Scores three styles within the organizer's selected destination. */
 export function generateRecommendations(trip: TripInput, analysis: TripAnalysis): ScoredPlan[] {
   const home = trip.destination.trim();
   const homeKey = home.toLowerCase();
@@ -324,17 +371,15 @@ export function generateRecommendations(trip: TripInput, analysis: TripAnalysis)
         tags: fallbackTags,
       };
 
-  const alternates = CATALOG.filter((c) => c.key !== primary.key);
-  const candidates = [primary, ...alternates];
+  const candidates = sameDestinationVariants(primary, trip, analysis);
 
   const scored = candidates
     .map((plan) => {
       const scores = calculateCompatibilityScore(plan, analysis);
-      const bonus = plan.key === primary.key ? 4 : 0;
       return {
         ...plan,
         dates: seasonalDates(analysis, plan.duration),
-        compatibility_score: Math.min(99, scores.overall + bonus),
+        compatibility_score: Math.min(99, scores.overall),
         score_availability: scores.availability,
         score_budget: scores.budget,
         score_interests: scores.interests,
@@ -343,14 +388,7 @@ export function generateRecommendations(trip: TripInput, analysis: TripAnalysis)
     })
     .sort((a, b) => b.compatibility_score - a.compatibility_score);
 
-  const picked: ScoredPlan[] = [];
-  const primaryScored = scored.find((s) => s.key === primary.key);
-  if (primaryScored) picked.push(primaryScored);
-  for (const s of scored) {
-    if (picked.length >= 3) break;
-    if (!picked.some((p) => p.key === s.key)) picked.push(s);
-  }
-  return picked.sort((a, b) => b.compatibility_score - a.compatibility_score);
+  return scored.slice(0, 3);
 }
 
 export type ItineraryDay = { day: number; title: string; items: { time: string; text: string }[] };
