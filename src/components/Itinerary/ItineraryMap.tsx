@@ -77,8 +77,6 @@ export function ItineraryMap({
     };
   }, []);
 
-  const located = points.filter((p) => p.lat != null && p.lng != null);
-
   useEffect(() => {
     setResolvedPoints(points);
   }, [points]);

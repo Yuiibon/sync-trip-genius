@@ -216,7 +216,13 @@ const CATALOG: CandidatePlan[] = [
     destination: "Ooty, India",
     duration: 3,
     estimated_budget: 6800,
-    activities: ["Doddabetta trek", "Tea garden tour", "Scenic viewpoints", "Boathouse", "Nilgiri toy train"],
+    activities: [
+      "Doddabetta Peak",
+      "Government Botanical Garden, Ooty",
+      "Ooty Lake Boat House",
+      "The Tea Factory and The Tea Museum",
+      "Nilgiri Mountain Railway, Udagamandalam",
+    ],
     tags: ["nature", "trekking", "photography", "camping"],
   },
   {
@@ -420,9 +426,9 @@ export function generateItinerary(
         title: "Arrival & easy start",
         items: [
           { time: "Morning", text: `Arrive in ${city}, group meet-up point` },
-          { time: "Noon", text: "Hotel check-in and freshen up" },
-          { time: "Lunch", text: "Local welcome lunch near the stay" },
-          { time: "Evening", text: acts[0] ?? "Sunset spot walk" },
+          { time: "Noon", text: acts[0] ?? `Central ${city}` },
+          { time: "Afternoon", text: acts[1 % acts.length] ?? acts[0] ?? `Central ${city}` },
+          { time: "Evening", text: acts[2 % acts.length] ?? acts[0] ?? `Central ${city}` },
           { time: "Night", text: "Group dinner and trip briefing" },
         ],
       });
@@ -431,8 +437,8 @@ export function generateItinerary(
         day: d,
         title: "Wrap up & return",
         items: [
-          { time: "Morning", text: "Breakfast and last-minute souvenir shopping" },
-          { time: "Noon", text: "Checkout and group photo" },
+          { time: "Morning", text: acts[(d + 1) % acts.length] ?? `Central ${city}` },
+          { time: "Noon", text: acts[(d + 2) % acts.length] ?? `Central ${city}` },
           { time: "Afternoon", text: "Return journey" },
         ],
       });
@@ -443,11 +449,9 @@ export function generateItinerary(
         day: d,
         title: a1,
         items: [
-          { time: "Breakfast", text: "Breakfast at the stay" },
           { time: "Morning", text: a1 },
-          { time: "Lunch", text: "Local speciality lunch" },
           { time: "Afternoon", text: a2 },
-          { time: "Night", text: d % 2 === 0 ? "Night market / live music" : "Relaxed dinner" },
+          { time: "Evening", text: acts[(d + 1) % acts.length] ?? a1 },
         ],
       });
     }
