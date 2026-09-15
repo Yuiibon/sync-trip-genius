@@ -133,6 +133,7 @@ function ItineraryPage() {
   const doc: GeneratedItinerary = content;
 
   function downloadItinerary() {
+    if (!plan) return;
 
     const lines = [
       `${trip.trip_name} — ${plan.destination}`,
