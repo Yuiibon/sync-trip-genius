@@ -45,7 +45,6 @@ export function extractPlaceName(text: string): string {
 }
 
 function target(point: MapPoint) {
-  if (point.lat != null && point.lng != null) return `${point.lat},${point.lng}`;
   return point.address ?? point.query;
 }
 
@@ -95,9 +94,8 @@ export function mapsRouteUrl(points: MapPoint[]) {
 
   if (mids.length > 0) {
     params.set("waypoints", mids.map(target).join("|"));
-    const pids = mids.map((m) => m.placeId ?? "").join("|");
-    if (pids.replace(/\|/g, "").length > 0) {
-      params.set("waypoint_place_ids", pids);
+    if (mids.every((point) => Boolean(point.placeId))) {
+      params.set("waypoint_place_ids", mids.map((point) => point.placeId).join("|"));
     }
   }
 

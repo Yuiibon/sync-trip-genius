@@ -25,7 +25,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { formatINR } from "@/lib/tripsync/constants";
 import type { GeneratedItinerary } from "@/lib/tripsync/engine";
-import { getItinerary, getPlans, getTrip } from "@/lib/tripsync/queries";
+import {
+  ensureDestinationLockedPlans,
+  getItinerary,
+  getPlans,
+  getResponses,
+  getTrip,
+} from "@/lib/tripsync/queries";
 import { geocodeItineraryStops } from "@/lib/tripsync/maps.functions";
 import { dayPoints, mapsDirectionsUrl, mapsRouteUrl, mapsSearchUrl } from "@/lib/tripsync/maps";
 import { inviteUrl, itineraryMessage } from "@/lib/tripsync/invite";
@@ -53,7 +59,13 @@ function ItineraryPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["trip", id, "itinerary"],
     queryFn: async () => {
-      const [trip, plans, itinerary] = await Promise.all([getTrip(id), getPlans(id), getItinerary(id)]);
+      const [trip, responses, savedPlans] = await Promise.all([
+        getTrip(id),
+        getResponses(id),
+        getPlans(id),
+      ]);
+      const plans = await ensureDestinationLockedPlans(trip, responses, savedPlans);
+      const itinerary = await getItinerary(id);
       return { trip, plans, itinerary };
     },
   });
@@ -121,10 +133,11 @@ function ItineraryPage() {
   const doc: GeneratedItinerary = content;
 
   function downloadItinerary() {
+    if (!plan) return;
 
     const lines = [
-      `${trip.trip_name} — ${plan!.destination}`,
-      `${plan!.duration} days · ${formatINR(plan!.estimated_budget)} per person · ${plan!.compatibility_score}% group match`,
+      `${trip.trip_name} — ${plan.destination}`,
+      `${plan.duration} days · ${formatINR(plan.estimated_budget)} per person · ${plan.compatibility_score}% group match`,
       "",
       doc.summary,
       "",
@@ -135,7 +148,7 @@ function ItineraryPage() {
       ]),
       "Budget breakdown:",
       ...doc.budget_breakdown.map((b) => `  ${b.label}: ${formatINR(b.amount)}`),
-      `  Total: ${formatINR(plan!.estimated_budget)}`,
+      `  Total: ${formatINR(plan.estimated_budget)}`,
       "",
       "Packing list:",
       ...doc.packing_list.map((p) => `  - ${p}`),
