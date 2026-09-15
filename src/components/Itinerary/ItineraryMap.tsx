@@ -205,7 +205,7 @@ export function ItineraryMap({
           Loading map…
         </div>
       )}
-      {status === "ready" && located.length === 0 && (
+      {status === "ready" && locatedResolved.length === 0 && (
         <div className="absolute inset-x-0 bottom-0 bg-card/90 p-2 text-center text-[11px] text-muted-foreground">
           Stop locations are still resolving.
         </div>
