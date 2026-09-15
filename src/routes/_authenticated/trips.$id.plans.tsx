@@ -19,6 +19,7 @@ import {
   getResponses,
   getTrip,
   getVoteTally,
+  ensureDestinationLockedPlans,
   savePlans,
   toTripInput,
 } from "@/lib/tripsync/queries";
@@ -47,12 +48,13 @@ function PlansPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["trip", id, "plans"],
     queryFn: async () => {
-      const [trip, responses, plans, votes] = await Promise.all([
+      const [trip, responses, savedPlans, votes] = await Promise.all([
         getTrip(id),
         getResponses(id),
         getPlans(id),
         getVoteTally(id),
       ]);
+      const plans = await ensureDestinationLockedPlans(trip, responses, savedPlans);
       return { trip, responses, plans, votes, analysis: analyzeTripResponses(responses, toTripInput(trip)) };
     },
   });

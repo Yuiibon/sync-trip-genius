@@ -1,5 +1,12 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { ParticipantResponse, ScoredPlan, TripInput } from "./engine";
+import {
+  analyzeTripResponses,
+  generateItinerary,
+  generateRecommendations,
+  type ParticipantResponse,
+  type ScoredPlan,
+  type TripInput,
+} from "./engine";
 
 export type Trip = {
   id: string;
@@ -104,6 +111,77 @@ export async function savePlans(tripId: string, plans: ScoredPlan[]) {
     .update({ status: "plans_ready" })
     .eq("id", tripId);
   if (statusError) throw statusError;
+}
+
+function normalizedDestination(value: string) {
+  return value.trim().replace(/\s+/g, " ").toLocaleLowerCase();
+}
+
+/** Repairs legacy plans that were generated for cities other than the selected destination. */
+export async function ensureDestinationLockedPlans(
+  trip: Trip,
+  responses: ParticipantResponse[],
+  plans: TripPlan[],
+): Promise<TripPlan[]> {
+  const expected = normalizedDestination(trip.destination);
+  const isCurrent =
+    plans.length === 3 && plans.every((plan) => normalizedDestination(plan.destination) === expected);
+  if (isCurrent || plans.length === 0) return plans;
+
+  const analysis = analyzeTripResponses(responses, toTripInput(trip));
+  const replacements = generateRecommendations(toTripInput(trip), analysis);
+
+  if (plans.length !== 3) {
+    const { error: itineraryError } = await supabase.from("itineraries").delete().eq("trip_id", trip.id);
+    if (itineraryError) throw itineraryError;
+    const { error: votesError } = await supabase.from("votes").delete().eq("trip_id", trip.id);
+    if (votesError) throw votesError;
+    await savePlans(trip.id, replacements);
+    return getPlans(trip.id);
+  }
+
+  const selectedIndex = Math.max(0, plans.findIndex((plan) => plan.is_selected));
+  for (let index = 0; index < plans.length; index += 1) {
+    const current = plans[index];
+    const replacement = replacements[index];
+    if (!current || !replacement) continue;
+    const { error } = await supabase
+      .from("trip_plans")
+      .update({
+        plan_name: replacement.plan_name,
+        destination: replacement.destination,
+        dates: replacement.dates,
+        estimated_budget: replacement.estimated_budget,
+        duration: replacement.duration,
+        activities: replacement.activities,
+        compatibility_score: replacement.compatibility_score,
+        score_availability: replacement.score_availability,
+        score_budget: replacement.score_budget,
+        score_interests: replacement.score_interests,
+        reasoning: replacement.reasoning,
+      })
+      .eq("id", current.id);
+    if (error) throw error;
+  }
+
+  const selectedPlan = plans[selectedIndex];
+  const selectedReplacement = replacements[selectedIndex];
+  if (selectedPlan?.is_selected && selectedReplacement) {
+    const itinerary = generateItinerary(selectedReplacement, analysis);
+    const { error } = await supabase.from("itineraries").upsert(
+      {
+        trip_id: trip.id,
+        plan_id: selectedPlan.id,
+        content: JSON.parse(JSON.stringify(itinerary)),
+        budget_breakdown: { items: itinerary.budget_breakdown, total: selectedReplacement.estimated_budget },
+        packing_list: itinerary.packing_list,
+      },
+      { onConflict: "trip_id" },
+    );
+    if (error) throw error;
+  }
+
+  return getPlans(trip.id);
 }
 
 export async function getItinerary(tripId: string) {
