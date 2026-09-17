@@ -26,8 +26,19 @@ export const Route = createFileRoute("/_authenticated/trips/")({
 
 function TripsPage() {
   const { data, isLoading } = useDashboardData();
+  const queryClient = useQueryClient();
   const [share, setShare] = useState<Trip | null>(null);
   const trips = data?.trips ?? [];
+
+  async function removeTrip(trip: Trip) {
+    try {
+      await deleteTrip(trip.id);
+      await queryClient.invalidateQueries();
+      toast.success(`"${trip.trip_name}" deleted`);
+    } catch {
+      toast.error("Could not delete this trip. Please try again.");
+    }
+  }
 
   return (
     <div className="space-y-6">
