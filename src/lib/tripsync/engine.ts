@@ -409,6 +409,16 @@ export type GeneratedItinerary = {
   transportation: string;
 };
 
+/** Arrival / departure hub for the group's preferred way of travelling. */
+function transportHub(city: string, transport: string) {
+  const t = transport.toLowerCase();
+  if (t.includes("train")) return { hub: `${city} Railway Station`, mode: "train" };
+  if (t.includes("flight") || t.includes("air")) return { hub: `${city} Airport`, mode: "flight" };
+  if (t.includes("bus")) return { hub: `${city} Bus Stand`, mode: "bus" };
+  if (t.includes("car") || t.includes("cab")) return { hub: `${city} city centre`, mode: "road trip" };
+  return { hub: `${city} Bus Stand`, mode: "shared transport" };
+}
+
 /** Builds the final day-by-day itinerary for the winning plan. */
 export function generateItinerary(
   plan: { plan_name: string; destination: string; duration: number; estimated_budget: number; activities: string[] },
@@ -419,39 +429,65 @@ export function generateItinerary(
   const acts = plan.activities.length ? plan.activities : ["Local sightseeing"];
   const total = Math.max(2, plan.duration);
 
+  const transportPref = analysis.transportation[0]?.label ?? "Train";
+  const stayPref = analysis.accommodations[0]?.label ?? "Hotel";
+  const { hub, mode } = transportHub(city, transportPref);
+  const stay = `${stayPref === "No Preference" ? "Hotel" : stayPref} in ${city}`;
+  const act = (i: number) => acts[((i % acts.length) + acts.length) % acts.length] ?? `Central ${city}`;
+
   for (let d = 1; d <= total; d++) {
     if (d === 1) {
       days.push({
         day: 1,
-        title: "Arrival & easy start",
+        title: `Arrival by ${mode} & easy start`,
         items: [
-          { time: "Morning", text: `Arrive in ${city}, group meet-up point` },
-          { time: "Noon", text: acts[0] ?? `Central ${city}` },
-          { time: "Afternoon", text: acts[1 % acts.length] ?? acts[0] ?? `Central ${city}` },
-          { time: "Evening", text: acts[2 % acts.length] ?? acts[0] ?? `Central ${city}` },
-          { time: "Night", text: "Group dinner and trip briefing" },
+          {
+            time: "07:30 AM",
+            text: `Group meet-up at ${hub} — wait near the main exit, headcount and share the group location pin`,
+          },
+          {
+            time: "08:30 AM",
+            text: `Transfer from ${hub} to ${stay} — pre-booked cab, keep IDs handy`,
+          },
+          {
+            time: "09:30 AM",
+            text: `Check-in at ${stay} — drop bags, freshen up, room allotment`,
+          },
+          { time: "10:30 AM", text: `Breakfast near ${stay} — local specialities, budget ₹150–250 each` },
+          { time: "11:30 AM", text: `${act(0)} — first sightseeing stop, allow about 2 hours` },
+          { time: "02:00 PM", text: `Lunch in ${city} — sit-down thali, 1 hour break` },
+          { time: "03:30 PM", text: `${act(1)} — afternoon stop, best light for photos` },
+          { time: "06:00 PM", text: `${act(2)} — relaxed evening walk` },
+          { time: "08:30 PM", text: `Group dinner in ${city} — trip briefing and plan for tomorrow` },
         ],
       });
     } else if (d === total) {
       days.push({
         day: d,
-        title: "Wrap up & return",
+        title: "Last stops & return",
         items: [
-          { time: "Morning", text: acts[(d + 1) % acts.length] ?? `Central ${city}` },
-          { time: "Noon", text: acts[(d + 2) % acts.length] ?? `Central ${city}` },
-          { time: "Afternoon", text: "Return journey" },
+          { time: "07:30 AM", text: `Breakfast at ${stay} — pack bags before leaving the room` },
+          { time: "09:00 AM", text: `${act(d + 1)} — final sightseeing stop` },
+          { time: "11:00 AM", text: `Checkout from ${stay} — settle bills, store luggage at reception` },
+          { time: "12:00 PM", text: `${act(d + 2)} — souvenir shopping and last group photo` },
+          { time: "02:00 PM", text: `Lunch in ${city} before heading out` },
+          { time: "03:30 PM", text: `Transfer to ${hub} — reach 45 minutes early for the return ${mode}` },
         ],
       });
     } else {
-      const a1 = acts[(d - 1) % acts.length] ?? "Sightseeing";
-      const a2 = acts[d % acts.length] ?? "Local exploration";
+      const a1 = act(d - 1);
+      const a2 = act(d);
+      const a3 = act(d + 1);
       days.push({
         day: d,
         title: a1,
         items: [
-          { time: "Morning", text: a1 },
-          { time: "Afternoon", text: a2 },
-          { time: "Evening", text: acts[(d + 1) % acts.length] ?? a1 },
+          { time: "07:30 AM", text: `Breakfast at ${stay} — leave by 8:30 AM to beat the crowd` },
+          { time: "09:00 AM", text: `${a1} — main stop of the day, roughly 2–3 hours` },
+          { time: "12:30 PM", text: `Lunch in ${city} — local restaurant close to the next stop` },
+          { time: "02:00 PM", text: `${a2} — afternoon activity` },
+          { time: "05:00 PM", text: `${a3} — sunset point / evening stroll` },
+          { time: "08:00 PM", text: `Dinner in ${city} — settle the day's shared expenses` },
         ],
       });
     }

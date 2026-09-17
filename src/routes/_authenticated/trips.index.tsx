@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Map, Plus } from "lucide-react";
+import { toast } from "sonner";
 
 import { EmptyState } from "@/components/app/EmptyState";
 import { ShareDialog } from "@/components/app/ShareDialog";
@@ -8,7 +10,7 @@ import { TripCard } from "@/components/app/TripCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDashboardData } from "@/routes/_authenticated/dashboard";
-import type { Trip } from "@/lib/tripsync/queries";
+import { deleteTrip, type Trip } from "@/lib/tripsync/queries";
 
 export const Route = createFileRoute("/_authenticated/trips/")({
   head: () => ({
@@ -24,8 +26,19 @@ export const Route = createFileRoute("/_authenticated/trips/")({
 
 function TripsPage() {
   const { data, isLoading } = useDashboardData();
+  const queryClient = useQueryClient();
   const [share, setShare] = useState<Trip | null>(null);
   const trips = data?.trips ?? [];
+
+  async function removeTrip(trip: Trip) {
+    try {
+      await deleteTrip(trip.id);
+      await queryClient.invalidateQueries();
+      toast.success(`"${trip.trip_name}" deleted`);
+    } catch {
+      toast.error("Could not delete this trip. Please try again.");
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -68,6 +81,7 @@ function TripsPage() {
               trip={trip}
               responseCount={data?.counts[trip.id] ?? 0}
               onShare={setShare}
+              onDelete={removeTrip}
             />
           ))}
         </div>

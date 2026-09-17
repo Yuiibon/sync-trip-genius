@@ -1,6 +1,18 @@
 import { Link } from "@tanstack/react-router";
-import { CalendarDays, MapPin, Share2, Users } from "lucide-react";
+import { CalendarDays, Loader2, MapPin, Share2, Trash2, Users } from "lucide-react";
+import { useState } from "react";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -28,14 +40,28 @@ export function TripCard({
   trip,
   responseCount,
   onShare,
+  onDelete,
 }: {
   trip: Trip;
   responseCount: number;
   onShare?: (trip: Trip) => void;
+  onDelete?: (trip: Trip) => Promise<void> | void;
 }) {
+  const [deleting, setDeleting] = useState(false);
   const pct = trip.participant_count
     ? Math.min(100, Math.round((responseCount / trip.participant_count) * 100))
     : 0;
+
+  async function confirmDelete() {
+    if (!onDelete) return;
+    setDeleting(true);
+    try {
+      await onDelete(trip);
+    } finally {
+      setDeleting(false);
+    }
+  }
+
 
   return (
     <div className="card-surface card-interactive flex flex-col p-5">
@@ -81,6 +107,39 @@ export function TripCard({
           <Button size="sm" variant="outline" onClick={() => onShare(trip)}>
             <Share2 className="size-4" /> Share Link
           </Button>
+        ) : null}
+        {onDelete ? (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                size="sm"
+                variant="outline"
+                aria-label={`Delete ${trip.trip_name}`}
+                disabled={deleting}
+                className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+              >
+                {deleting ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete “{trip.trip_name}”?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This permanently removes the trip along with its responses, plans, votes and
+                  itinerary. The invite link will stop working.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={confirmDelete}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Delete trip
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         ) : null}
       </div>
     </div>

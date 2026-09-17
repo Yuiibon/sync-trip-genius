@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { resetDemoData, seedDemoTrip } from "@/lib/tripsync/demo";
-import { listTrips, type Trip } from "@/lib/tripsync/queries";
+import { deleteTrip, listTrips, type Trip } from "@/lib/tripsync/queries";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -78,6 +78,16 @@ function DashboardPage() {
       toast.success(removed ? "Demo data cleared" : "No demo data to clear");
     } catch {
       toast.error("Something went wrong. Please try again.");
+    }
+  }
+
+  async function removeTrip(trip: Trip) {
+    try {
+      await deleteTrip(trip.id);
+      await queryClient.invalidateQueries();
+      toast.success(`"${trip.trip_name}" deleted`);
+    } catch {
+      toast.error("Could not delete this trip. Please try again.");
     }
   }
 
@@ -159,6 +169,7 @@ function DashboardPage() {
                 trip={trip}
                 responseCount={data?.counts[trip.id] ?? 0}
                 onShare={setShare}
+                onDelete={removeTrip}
               />
             ))}
           </div>

@@ -58,6 +58,23 @@ export async function getTrip(id: string): Promise<Trip> {
   return data as Trip;
 }
 
+/** Removes a trip and every record attached to it. */
+export async function deleteTrip(id: string) {
+  const { error: itinError } = await supabase.from("itineraries").delete().eq("trip_id", id);
+  if (itinError) throw itinError;
+  const { error: voteError } = await supabase.from("votes").delete().eq("trip_id", id);
+  if (voteError) throw voteError;
+  const { error: planError } = await supabase.from("trip_plans").delete().eq("trip_id", id);
+  if (planError) throw planError;
+  const { error: respError } = await supabase
+    .from("participant_responses")
+    .delete()
+    .eq("trip_id", id);
+  if (respError) throw respError;
+  const { error } = await supabase.from("trips").delete().eq("id", id);
+  if (error) throw error;
+}
+
 export async function getResponses(tripId: string): Promise<ParticipantResponse[]> {
   const { data, error } = await supabase
     .from("participant_responses")
