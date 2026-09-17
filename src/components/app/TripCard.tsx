@@ -40,14 +40,28 @@ export function TripCard({
   trip,
   responseCount,
   onShare,
+  onDelete,
 }: {
   trip: Trip;
   responseCount: number;
   onShare?: (trip: Trip) => void;
+  onDelete?: (trip: Trip) => Promise<void> | void;
 }) {
+  const [deleting, setDeleting] = useState(false);
   const pct = trip.participant_count
     ? Math.min(100, Math.round((responseCount / trip.participant_count) * 100))
     : 0;
+
+  async function confirmDelete() {
+    if (!onDelete) return;
+    setDeleting(true);
+    try {
+      await onDelete(trip);
+    } finally {
+      setDeleting(false);
+    }
+  }
+
 
   return (
     <div className="card-surface card-interactive flex flex-col p-5">
