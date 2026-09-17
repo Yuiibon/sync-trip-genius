@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { resetDemoData, seedDemoTrip } from "@/lib/tripsync/demo";
-import { listTrips, type Trip } from "@/lib/tripsync/queries";
+import { deleteTrip, listTrips, type Trip } from "@/lib/tripsync/queries";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
