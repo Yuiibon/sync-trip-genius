@@ -108,6 +108,39 @@ export function TripCard({
             <Share2 className="size-4" /> Share Link
           </Button>
         ) : null}
+        {onDelete ? (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                size="sm"
+                variant="outline"
+                aria-label={`Delete ${trip.trip_name}`}
+                disabled={deleting}
+                className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+              >
+                {deleting ? <Loader2 className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete “{trip.trip_name}”?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This permanently removes the trip along with its responses, plans, votes and
+                  itinerary. The invite link will stop working.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={confirmDelete}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Delete trip
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        ) : null}
       </div>
     </div>
   );
