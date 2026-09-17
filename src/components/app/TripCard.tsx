@@ -1,6 +1,18 @@
 import { Link } from "@tanstack/react-router";
-import { CalendarDays, MapPin, Share2, Users } from "lucide-react";
+import { CalendarDays, Loader2, MapPin, Share2, Trash2, Users } from "lucide-react";
+import { useState } from "react";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
