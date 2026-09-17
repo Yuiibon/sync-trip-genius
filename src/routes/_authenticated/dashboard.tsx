@@ -81,6 +81,16 @@ function DashboardPage() {
     }
   }
 
+  async function removeTrip(trip: Trip) {
+    try {
+      await deleteTrip(trip.id);
+      await queryClient.invalidateQueries();
+      toast.success(`"${trip.trip_name}" deleted`);
+    } catch {
+      toast.error("Could not delete this trip. Please try again.");
+    }
+  }
+
   const trips = data?.trips ?? [];
   const active = trips.filter((t) => t.status !== "finalized").length;
 
