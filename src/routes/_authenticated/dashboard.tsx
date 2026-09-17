@@ -169,6 +169,7 @@ function DashboardPage() {
                 trip={trip}
                 responseCount={data?.counts[trip.id] ?? 0}
                 onShare={setShare}
+                onDelete={removeTrip}
               />
             ))}
           </div>
